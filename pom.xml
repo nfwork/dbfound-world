@@ -7,7 +7,7 @@
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
-	<name>springboot-dbfound-demo</name>
+	<name>dbfound-world</name>
 	<url>http://maven.apache.org</url>
 
 	<parent>
