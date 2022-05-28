@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
+	
+	<query>
+		<sql>
+		 <![CDATA[
+			SELECT
+				u.user_id,
+				u.user_name,
+				u.role_id,
+				u.user_code,
+				u.status,
+				u.create_date,
+				u.create_by,
+				u.password
+			FROM SYS_USER u
+			#WHERE_CLAUSE#
+		 ]]>
+		</sql>
+		<filter name="time_from" express="create_date &gt;= ${@time_from}" />
+		<filter name="time_to" express="create_date &lt;= ${@time_to}" />
+		<filter name="user_code" express="user_code like '#{@user_code}'" />
+		<filter name="user_name" express="user_name like ${@user_name}" />
+	</query>
+
+	<execute name="add">
+		<sqls>
+			<collisionSql
+				where="exists (select 1 from sys_user where user_code= ${@user_code})"
+				message="用户编号:#{@user_code} 已经使用！" />
+			<executeSql>
+			 <![CDATA[
+			    INSERT INTO sys_user
+				   (user_code,
+					user_name,
+					password,
+					role_id,
+					status,
+					create_by,
+					create_date,
+					last_update_by,
+					last_update_date)
+				VALUES
+					(${@user_code},
+					${@user_name},
+					${@password},
+					${@role_id},
+					${@status},
+					${@user_id},
+					NOW(),
+					${@user_id},
+					NOW())
+			 ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="update">
+		<sqls>
+			<executeSql>
+			  <![CDATA[
+				update sys_user set 
+					user_name = ${@user_name} ,
+					role_id =${@role_id},
+					password = ${@password} ,
+					status =${@status},
+					last_update_by = ${@user_id} ,
+					last_update_date = NOW() 
+				where user_id = ${@uid} 
+			  ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="delete">
+		<param name="user_id" dataType="number" />
+		<sqls>
+			<executeSql>
+			  <![CDATA[
+				delete from sys_user where user_id= ${@user_id} 
+			  ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+</model>
