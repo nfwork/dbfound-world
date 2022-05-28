@@ -1,5 +1,5 @@
-# dbfound-world 后台接口十大场景案例，原来后台可以如此简单
-##1、查询案例
+## dbfound-world 后台接口十大场景案例，原来后台可以如此简单
+### 1、查询案例
 创建文件user.xml放入到resources目录，定义用户查询接口，可以根据user_name、user_code、time_from、time_to进行查询；
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -56,8 +56,7 @@
     "totalCounts": 1
 }
 ```
-
-##2、新增案例
+### 2、新增案例
 在案例1中创建的user.xml中,创建一个名为add的execute，用来添加用户
 ```xml
 <execute name="add">
