@@ -29,10 +29,10 @@
 请求地址http://localhost:8080/user.query 即可调用该接口，demo中采用Content-Type：application/json方式请求；
 ```json
 {
-	user_name : "小明",
-	user_code : "",
-	time_from : "",
-	time_to   : ""
+	"user_name" : "小明",
+	"user_code" : "",
+	"time_from" : "2022-05-08",
+	"time_to"   : ""
 }
 ```
 返回结构如下：
@@ -95,11 +95,11 @@
 请求地址http://localhost:8080/user.execute!add 传入如下参数：
 ```json
 {
-	user_name : "小明",
-	user_code : "xiaoming",
-	password  : "123",
-	role_id   : 2,
-	status    : "Y"
+	"user_name" : "小明",
+	"user_code" : "xiaoming",
+	"password"  : "123",
+	"role_id"   : 2,
+	"status"    : "Y"
 }
 ```
 返回结果如下：
