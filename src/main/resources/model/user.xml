@@ -48,9 +48,7 @@
 			<executeSql>
 			  <![CDATA[
 				update user set
-					user_name = ${@user_name},
-					last_update_by = 1,
-					last_update_date = NOW() 
+					user_name = ${@user_name}
 				where user_id = ${@user_id}
 			  ]]>
 			</executeSql>

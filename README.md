@@ -1,7 +1,7 @@
 ## dbfound-world 后台接口十大场景案例，原来后台可以如此简单
 ### 准备工作
 创建一个springboot项目，引入dbfound-spring-boot-start依赖，写好启动类；
-创建数据库表user；
+创建数据库表user；配置好dbfound数据库链接信息；
 ```sql
 CREATE TABLE `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -120,9 +120,7 @@ CREATE TABLE `user` (
         <executeSql>
           <![CDATA[
             update user set 
-                user_name = ${@user_name},
-                last_update_by = 1,
-                last_update_date = NOW() 
+                user_name = ${@user_name}
             where user_id = ${@user_id} 
           ]]>
         </executeSql>
@@ -258,5 +256,37 @@ CREATE TABLE `user` (
             }
         ]
     }
+}
+```
+### 7、批量添加 有user_id就修改，没有就新增；
+在userBatch.xml 新增一个名为batchAdd的execute，定义批量添加接口；注意新增和修改调用之前user.xml中定义的方法
+```xml
+<execute name="batchAdd">
+    <sqls>
+        <batchSql sourcePath="userList">
+            <whenSql when="${@user_id} is null">
+                <execute modelName="user" name="add"/>
+            </whenSql>
+            <whenSql when="${@user_id} is not null">
+                <execute modelName="user" name="update"/>
+            </whenSql>
+        </batchSql>
+    </sqls>
+</execute>
+```
+请求地址http://localhost:8080/userBatch.execute!batchAdd 请求参数如下：
+```json
+{
+	"userList":[
+		{
+			"user_name" : "小明",
+			"user_id" : "1"
+		},
+		{
+			"user_name" : "小李",
+			"user_code" : "xiaoli",
+			"password"  : "123456123"
+		}
+	]
 }
 ```

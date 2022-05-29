@@ -30,4 +30,17 @@
 			<query modelName="user" name="" rootPath="outParam.data2"/>
 		</sqls>
 	</execute>
+
+	<execute name="batchAdd">
+		<sqls>
+			<batchSql sourcePath="userList">
+				<whenSql when="${@user_id} is null">
+					<execute modelName="user" name="add"/>
+				</whenSql>
+				<whenSql when="${@user_id} is not null">
+					<execute modelName="user" name="update"/>
+				</whenSql>
+			</batchSql>
+		</sqls>
+	</execute>
 </model>
