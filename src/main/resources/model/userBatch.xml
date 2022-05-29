@@ -43,4 +43,32 @@
 			</batchSql>
 		</sqls>
 	</execute>
+
+	<execute name="addTwoTable">
+		<param name="user_id" ioType="out"/>
+		<sqls>
+			<executeSql generatedKeyParam="user_id">
+				<![CDATA[
+			    INSERT INTO user
+				   (user_code,
+					user_name,
+					password,
+					create_by,
+					create_date)
+				VALUES
+					(${@user_code},
+					${@user_name},
+					${@password},
+					1,
+					NOW())
+			 ]]>
+			</executeSql>
+			<executeSql>
+				<![CDATA[
+				insert into table2(user_id)
+				values (${@user_id})
+				]]>
+			</executeSql>
+		</sqls>
+	</execute>
 </model>

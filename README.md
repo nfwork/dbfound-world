@@ -290,3 +290,75 @@ CREATE TABLE `user` (
 	]
 }
 ```
+### 8、dbfound内置批量新增GridData
+当提交数据中包含了一个GridData的数组，则会触发dbfoun内置的批量新增；
+同时内置了一个addOrUpdate的特定execute名，根据属性 _status 动态判断是新增，还是修改；
+_status为old则表面是老数据进行修改，为new则表示新数据进行新增；分别调用model中 名为 add 和 update的execute方法；
+拿user.xml举例，请求 http://localhost:8080/user.execute!addOrUpdate，请求参数如下：
+```json
+{
+  "GridData": [
+    {
+      "user_name" : "小明",
+      "user_code" : "xiaoming",
+      "password"  : "123456123",
+      "_status"   : "new"
+    },
+    {
+      "user_name" : "小杨",
+      "user_id" : "2",
+      "password"  : "123456123",
+      "_status"   : "old"
+    }
+  ]
+}
+```
+
+### 9、多表插入 第一张表自动生成主键id，作为第二张表的外键
+```xml
+<execute name="addTwoTable">
+    <param name="user_id" ioType="out"/>
+    <sqls>
+        <executeSql generatedKeyParam="user_id">
+            <![CDATA[
+            INSERT INTO user
+               (user_code,
+                user_name,
+                password,
+                create_by,
+                create_date)
+            VALUES
+                (${@user_code},
+                ${@user_name},
+                ${@password},
+                1,
+                NOW())
+         ]]>
+        </executeSql>
+        <executeSql>
+            <![CDATA[
+            insert into table2(user_id)
+            values (${@user_id})				
+            ]]>
+        </executeSql>
+    </sqls>
+</execute>
+```
+
+### excel数据导出
+所有的query对象，都支持excel导出；拿user.xml中的 默认query（query没有name)举例；
+访问地址：http://localhost:8080/user.export 就可以将数据导出了；需要传入导出参数制定excel列信息；
+```json
+{
+  "parameters": {
+    "user_name" : "小明",
+    "user_code" : "",
+    "time_from" : "2022-05-08",
+    "time_to"   : "",
+  },
+  "columns": [
+    {"name": "user_code","content": "用户编号", "width": 150},
+    {"name": "user_name","content": "用户名称", "width": 150}
+  ]
+}
+```
