@@ -294,7 +294,7 @@ CREATE TABLE `user` (
 当提交数据中包含了一个GridData的数组，则会触发dbfoun内置的批量新增；
 同时内置了一个addOrUpdate的特定execute名，根据属性 _status 动态判断是新增，还是修改；
 _status为old则表面是老数据进行修改，为new则表示新数据进行新增；分别调用model中 名为 add 和 update的execute方法；
-拿user.xml举例，请求 http://localhost:8080/user.execute!addOrUpdate，请求参数如下：
+拿user.xml举例，请求 http://localhost:8080/user.execute!addOrUpdate 请求参数如下：
 ```json
 {
   "GridData": [
@@ -345,7 +345,7 @@ _status为old则表面是老数据进行修改，为new则表示新数据进行�
 </execute>
 ```
 
-### excel数据导出
+### 10、excel数据导出
 所有的query对象，都支持excel导出；拿user.xml中的 默认query（query没有name)举例；
 访问地址：http://localhost:8080/user.export 就可以将数据导出了；需要传入导出参数制定excel列信息；
 ```json
