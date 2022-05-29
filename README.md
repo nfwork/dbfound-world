@@ -211,8 +211,8 @@ CREATE TABLE `user` (
 ```xml
 <execute name="batchGet">
     <sqls>
-        <query modelName="user" name="" rootPath="data1"/>
-        <query modelName="user" name="" rootPath="data2"/>
+        <query modelName="user" name="" rootPath="outParam.data1"/>
+        <query modelName="user" name="" rootPath="outParam.data2"/>
     </sqls>
 </execute>
 ```
@@ -291,7 +291,7 @@ CREATE TABLE `user` (
 }
 ```
 ### 8、dbfound内置批量新增GridData
-当提交数据中包含了一个GridData的数组，则会触发dbfoun内置的批量新增；
+当提交数据中包含了一个GridData的数组，则会触发dbfound内置的批量新增；
 同时内置了一个addOrUpdate的特定execute名，根据属性 _status 动态判断是新增，还是修改；
 _status为old则表面是老数据进行修改，为new则表示新数据进行新增；分别调用model中 名为 add 和 update的execute方法；
 拿user.xml举例，请求 http://localhost:8080/user.execute!addOrUpdate 请求参数如下：
