@@ -2,6 +2,7 @@ dbfound:
   system:
     underscore-to-camel-case: false
     open-log: true
+    model-modify-check: true
   web:
     open-session: false
   datasource:
