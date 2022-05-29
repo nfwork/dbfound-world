@@ -6,12 +6,10 @@
 			SELECT
 				u.user_id,
 				u.user_name,
-				u.role_id,
 				u.user_code,
-				u.status,
 				u.create_date,
 				u.create_by
-			FROM SYS_USER u
+			FROM user u
 			#WHERE_CLAUSE#
 		 ]]>
 		</sql>
@@ -24,28 +22,20 @@
 	<execute name="add">
 		<sqls>
 			<collisionSql
-				where="exists (select 1 from sys_user where user_code= ${@user_code})"
+				where="exists (select 1 from user where user_code= ${@user_code})"
 				message="用户编号:#{@user_code} 已经使用！" />
 			<executeSql>
 			 <![CDATA[
-			    INSERT INTO sys_user
+			    INSERT INTO user
 				   (user_code,
 					user_name,
 					password,
-					role_id,
-					status,
 					create_by,
-					create_date,
-					last_update_by,
-					last_update_date)
+					create_date)
 				VALUES
 					(${@user_code},
 					${@user_name},
 					${@password},
-					${@role_id},
-					${@status},
-					1,
-					NOW(),
 					1,
 					NOW())
 			 ]]>
@@ -57,27 +47,25 @@
 		<sqls>
 			<executeSql>
 			  <![CDATA[
-				update sys_user set 
-					user_name = ${@user_name} ,
-					role_id =${@role_id},
-					password = ${@password} ,
-					status =${@status},
-					last_update_by = ${@user_id} ,
+				update user set
+					user_name = ${@user_name},
+					last_update_by = 1,
 					last_update_date = NOW() 
-				where user_id = ${@uid} 
+				where user_id = ${@user_id}
 			  ]]>
 			</executeSql>
 		</sqls>
 	</execute>
 
 	<execute name="delete">
-		<param name="user_id" dataType="number" />
 		<sqls>
-			<executeSql>
-			  <![CDATA[
-				delete from sys_user where user_id= ${@user_id} 
-			  ]]>
-			</executeSql>
+			<batchSql sourcePath="userList">
+				<executeSql>
+					<![CDATA[
+						delete from user where user_id= ${@user_id}
+					  ]]>
+				</executeSql>
+			</batchSql>
 		</sqls>
 	</execute>
 </model>

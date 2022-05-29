@@ -1,6 +1,21 @@
 ## dbfound-world 后台接口十大场景案例，原来后台可以如此简单
+### 准备工作
+创建一个springboot项目，引入dbfound-start依赖，写好启动类；
+创建数据库表user；
+```sql
+CREATE TABLE `user` (
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_code` varchar(100) NOT NULL,
+  `user_name` varchar(200) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  `create_date` datetime NOT NULL,
+  `create_by` int(11) NOT NULL,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY  (`user_code`) 
+);
+```
 ### 1、查询案例
-创建文件user.xml放入到resources目录，定义用户查询接口，可以根据user_name、user_code、time_from、time_to进行查询；
+创建文件user.xml放入到resources目录，定义用户查询接口，可以根据user_name、user_code、time_from、time_to进行查询； limit和start控制分页逻辑；
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
@@ -10,12 +25,10 @@
 			SELECT
 				u.user_id,
 				u.user_name,
-				u.role_id,
 				u.user_code,
-				u.status,
 				u.create_date,
 				u.create_by
-			FROM SYS_USER u
+			FROM user u
 			#WHERE_CLAUSE#
 		 ]]>
         </sql>
@@ -32,7 +45,9 @@
 	"user_name" : "小明",
 	"user_code" : "",
 	"time_from" : "2022-05-08",
-	"time_to"   : ""
+	"time_to"   : "",
+	"limit"     : 10,
+	"start"     : 0
 }
 ```
 返回结构如下：
@@ -43,49 +58,39 @@
     "outParam": null,
     "datas": [
         {
-            "create_by": 2,
+            "create_by": 1,
             "password": "123456123",
-            "user_code": "07420101",
-            "user_id": 7,
-            "role_id": 6,
+            "user_code": "xiaoming",
+            "user_id": 1,
             "user_name": "小明",
-            "create_date": "2021-08-01 00:00:00",
-            "status": "Y"
+            "create_date": "2021-08-01 00:00:00"
         }
     ],
     "totalCounts": 1
 }
 ```
 ### 2、新增案例
-在案例1中创建的user.xml中,创建一个名为add的execute，用来添加用户
+在案例1中创建的user.xml中,创建一个名为add的execute，用来添加用户;正常情况下create_by从登陆session中获取，案例中为了方便直接写死1；
 ```xml
 <execute name="add">
     <sqls>
         <collisionSql
-            where="exists (select 1 from sys_user where user_code= ${@user_code})"
+            where="exists (select 1 from user where user_code= ${@user_code})"
             message="用户编号:#{@user_code} 已经使用！" />
         <executeSql>
          <![CDATA[
-            INSERT INTO sys_user
-               (user_code,
-                user_name,
-                password,
-                role_id,
-                status,
-                create_by,
-                create_date,
-                last_update_by,
-                last_update_date)
-            VALUES
-                (${@user_code},
-                ${@user_name},
-                ${@password},
-                ${@role_id},
-                ${@status},
-                1,
-                NOW(),
-                1,
-                NOW())
+            INSERT INTO user
+				   (user_code,
+					user_name,
+					password,
+					create_by,
+					create_date)
+				VALUES
+					(${@user_code},
+					${@user_name},
+					${@password},
+					1,
+					NOW())
          ]]>
         </executeSql>
     </sqls>
@@ -96,9 +101,7 @@
 {
 	"user_name" : "小明",
 	"user_code" : "xiaoming",
-	"password"  : "123",
-	"role_id"   : 2,
-	"status"    : "Y"
+	"password"  : "123456123"
 }
 ```
 返回结果如下：
@@ -107,5 +110,100 @@
     "success": true,
     "message": "success",
     "outParam": null
+}
+```
+### 3、修改案例
+创建一个名为update的execute，用来修改用户
+```xml
+<execute name="update">
+    <sqls>
+        <executeSql>
+          <![CDATA[
+            update user set 
+                user_name = ${@user_name},
+                last_update_by = 1,
+                last_update_date = NOW() 
+            where user_id = ${@user_id} 
+          ]]>
+        </executeSql>
+    </sqls>
+</execute>
+```
+请求地址http://localhost:8080/user.execute!update ，请求参数如下：
+```json
+{
+	"user_name" : "小明1",
+	"user_id" : 1
+}
+```
+### 4、删除案例
+创建一个名为delete的execute，用来删除用户；这次我们允许批量删除
+```xml
+<execute name="delete">
+    <sqls>
+        <batchSql sourcePath="userList">
+            <executeSql>
+                <![CDATA[
+                    delete from sys_user where user_id= ${@user_id} 
+                  ]]>
+            </executeSql>
+        </batchSql>
+    </sqls>
+</execute>
+```
+请求地址 http://localhost:8080/user.execute!delete ,请求参数如下：
+```json
+{
+	"userList":[
+		{"user_id":1},
+		{"user_id":2}
+	]
+}
+```
+### 5、批量导入用户
+创建一个userBatch.xml文件，用来定义导入接口；
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
+	<execute>
+		<sqls>
+			<batchExecuteSql sourcePath="userList">
+				<![CDATA[
+					 INSERT INTO user
+						   (user_code,
+							user_name,
+							password,
+							create_by,
+							create_date)
+						VALUES
+						#BATCH_TEMPLATE_BEGIN#
+							(${@user_code},
+							${@user_name},
+							${@password},
+							1,
+							NOW())		
+						#BATCH_TEMPLATE_END#	
+						ON DUPLICATE KEY update user_name = values(user_name)
+				]]>
+			</batchExecuteSql>
+		</sqls>
+	</execute>
+</model>
+```
+请求地址http://localhost:8080/userBatch.execute ，请求参数如下：
+```json
+{
+	"userList":[
+		{
+			"user_name" : "小明",
+			"user_code" : "xiaoming",
+			"password"  : "123456123"
+		},
+		{
+			"user_name" : "小杨",
+			"user_code" : "xiao杨",
+			"password"  : "123456123"
+		}
+	]
 }
 ```
