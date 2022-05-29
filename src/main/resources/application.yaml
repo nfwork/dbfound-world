@@ -1,8 +1,8 @@
 dbfound:
   system:
     underscore-to-camel-case: false
+    open-log: true
   web:
-    base-path: /
     open-session: false
   datasource:
     db0:
