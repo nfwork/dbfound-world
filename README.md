@@ -1,6 +1,6 @@
 ## dbfound-world 后台接口十大场景案例，原来后台可以如此简单
 ### 准备工作
-创建一个springboot项目，引入dbfound-start依赖，写好启动类；
+创建一个springboot项目，引入dbfound-spring-boot-start依赖，写好启动类；
 创建数据库表user；
 ```sql
 CREATE TABLE `user` (
@@ -21,16 +21,16 @@ CREATE TABLE `user` (
 <model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
     <query>
         <sql>
-            <![CDATA[
-			SELECT
-				u.user_id,
-				u.user_name,
-				u.user_code,
-				u.create_date,
-				u.create_by
-			FROM user u
-			#WHERE_CLAUSE#
-		 ]]>
+        <![CDATA[
+            SELECT
+                u.user_id,
+                u.user_name,
+                u.user_code,
+                u.create_date,
+                u.create_by
+            FROM user u
+            #WHERE_CLAUSE#
+        ]]>
         </sql>
         <filter name="time_from" express="create_date &gt;= ${@time_from}" />
         <filter name="time_to" express="create_date &lt;= ${@time_to}" />
@@ -42,12 +42,12 @@ CREATE TABLE `user` (
 请求地址http://localhost:8080/user.query 即可调用该接口，demo中采用Content-Type：application/json方式请求；
 ```json
 {
-	"user_name" : "小明",
-	"user_code" : "",
-	"time_from" : "2022-05-08",
-	"time_to"   : "",
-	"limit"     : 10,
-	"start"     : 0
+    "user_name" : "小明",
+    "user_code" : "",
+    "time_from" : "2022-05-08",
+    "time_to"   : "",
+    "limit"     : 10,
+    "start"     : 0
 }
 ```
 返回结构如下：
@@ -79,18 +79,18 @@ CREATE TABLE `user` (
             message="用户编号:#{@user_code} 已经使用！" />
         <executeSql>
          <![CDATA[
-            INSERT INTO user
-				   (user_code,
-					user_name,
-					password,
-					create_by,
-					create_date)
-				VALUES
-					(${@user_code},
-					${@user_name},
-					${@password},
-					1,
-					NOW())
+        INSERT INTO user
+               (user_code,
+                user_name,
+                password,
+                create_by,
+                create_date)
+            VALUES
+                (${@user_code},
+                ${@user_name},
+                ${@password},
+                1,
+                NOW())
          ]]>
         </executeSql>
     </sqls>
@@ -143,9 +143,9 @@ CREATE TABLE `user` (
     <sqls>
         <batchSql sourcePath="userList">
             <executeSql>
-                <![CDATA[
-                    delete from sys_user where user_id= ${@user_id} 
-                  ]]>
+            <![CDATA[
+                delete from sys_user where user_id= ${@user_id} 
+            ]]>
             </executeSql>
         </batchSql>
     </sqls>
@@ -165,45 +165,98 @@ CREATE TABLE `user` (
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
-	<execute>
-		<sqls>
-			<batchExecuteSql sourcePath="userList">
-				<![CDATA[
-					 INSERT INTO user
-						   (user_code,
-							user_name,
-							password,
-							create_by,
-							create_date)
-						VALUES
-						#BATCH_TEMPLATE_BEGIN#
-							(${@user_code},
-							${@user_name},
-							${@password},
-							1,
-							NOW())		
-						#BATCH_TEMPLATE_END#	
-						ON DUPLICATE KEY update user_name = values(user_name)
-				]]>
-			</batchExecuteSql>
-		</sqls>
-	</execute>
+    <execute>
+        <sqls>
+            <batchExecuteSql sourcePath="userList">
+            <![CDATA[
+                 INSERT INTO user
+                       (user_code,
+                        user_name,
+                        password,
+                        create_by,
+                        create_date)
+                    VALUES
+                    #BATCH_TEMPLATE_BEGIN#
+                        (${@user_code},
+                        ${@user_name},
+                        ${@password},
+                        1,
+                        NOW())		
+                    #BATCH_TEMPLATE_END#	
+                    ON DUPLICATE KEY update user_name = values(user_name)
+            ]]>
+            </batchExecuteSql>
+        </sqls>
+    </execute>
 </model>
 ```
 请求地址http://localhost:8080/userBatch.execute ，请求参数如下：
 ```json
 {
-	"userList":[
-		{
-			"user_name" : "小明",
-			"user_code" : "xiaoming",
-			"password"  : "123456123"
-		},
-		{
-			"user_name" : "小杨",
-			"user_code" : "xiao杨",
-			"password"  : "123456123"
-		}
-	]
+  "userList":[
+    {
+      "user_name" : "小明",
+      "user_code" : "xiaoming",
+      "password"  : "123456123"
+    },
+    {
+      "user_name" : "小杨",
+      "user_code" : "xiaoyang",
+      "password"  : "123456123"
+    }
+  ]
+}
+```
+### 6、批量查询案例 
+有时候一个功能，查询条件有多个下拉框需要从数据库取值；我们可以一次性查询多个返回；
+在userBatch.xml中，添加一个名为batchGet的execute；
+```xml
+<execute name="batchGet">
+    <sqls>
+        <query modelName="user" name="" rootPath="data1"/>
+        <query modelName="user" name="" rootPath="data2"/>
+    </sqls>
+</execute>
+```
+请求接口地址：http://localhost:8080/userBatch.execute!batchGet
+返回接口如下：
+```json
+{
+    "success": true,
+    "message": "success",
+    "outParam": {
+        "data2": [
+            {
+                "create_by": 1,
+                "user_code": "xiaoming",
+                "user_id": 2,
+                "user_name": "小明",
+                "create_date": "2022-05-29 10:53:19"
+            },
+            {
+                "create_by": 1,
+                "user_code": "xiao杨",
+                "user_id": 3,
+                "user_name": "小杨",
+                "create_date": "2022-05-29 10:53:19"
+            }
+        ],
+        "data1": [
+            {
+                "create_by": 1,
+                "user_code": "xiaoming",
+                "user_id": 2,
+                "user_name": "小明",
+                "create_date": "2022-05-29 10:53:19"
+            },
+            {
+                "create_by": 1,
+                "user_code": "xiao杨",
+                "user_id": 3,
+                "user_name": "小杨",
+                "create_date": "2022-05-29 10:53:19"
+            }
+        ]
+    }
 }
 ```

@@ -23,4 +23,11 @@
 			</batchExecuteSql>
 		</sqls>
 	</execute>
+
+	<execute name="batchGet">
+		<sqls>
+			<query modelName="user" name="" rootPath="outParam.data1"/>
+			<query modelName="user" name="" rootPath="outParam.data2"/>
+		</sqls>
+	</execute>
 </model>
