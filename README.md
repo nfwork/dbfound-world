@@ -15,7 +15,7 @@ CREATE TABLE `user` (
 );
 ```
 ### 1、查询案例
-创建文件user.xml放入到resources目录，定义用户查询接口，可以根据user_name、user_code、time_from、time_to进行查询； limit和start控制分页逻辑；
+创建文件user.xml放入到resources下的model目录，定义用户查询接口，可以根据user_name、user_code、time_from、time_to进行查询； limit和start控制分页逻辑；
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
