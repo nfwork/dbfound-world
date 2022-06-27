@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
+
+	<query adapter="com.dbfound.world.UserAdapter">
+		<sql>
+		 <![CDATA[
+			SELECT
+				u.user_id,
+				u.user_name,
+				u.user_code,
+				'sing,dance,chess' tags
+			FROM user u
+			#WHERE_CLAUSE#
+		 ]]>
+		</sql>
+		<filter name="user_name" express="user_name like ${@user_name}" />
+	</query>
+
+	<execute adapter="com.dbfound.world.UserAdapter">
+		<sqls>
+			<executeSql>
+				<![CDATA[
+					delete from user where user_code = ${@user_code}
+				]]>
+			</executeSql>
+			<collisionSql
+				where="not exists (select 1 from user where user_code= 'xiaoming')"
+				message="用户编号:#{@user_code} 不能被删除！" />
+		</sqls>
+	</execute>
+
+</model>
