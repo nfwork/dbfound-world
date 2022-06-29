@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class UserAdapter implements ExecuteAdapter, QueryAdapter {
+public class UserAdapter implements ExecuteAdapter, QueryAdapter<User> {
 
     @Override
     public void beforeExecute(Context context, Map<String, Param> params) {
@@ -31,15 +31,13 @@ public class UserAdapter implements ExecuteAdapter, QueryAdapter {
     }
 
     @Override
-    public void afterQuery(Context context, Map<String, Param> params, QueryResponseObject responseObject) {
-        List<Map<String,Object>> dataList = responseObject.getDatas();
+    public void afterQuery(Context context, Map<String, Param> params, QueryResponseObject<User> responseObject) {
+        List<User> dataList = responseObject.getDatas();
 
-        for (Map<String,Object> data : dataList){
-            if(DataUtil.isNotNull(data.get("tags"))){
-                String[] tags = data.get("tags").toString().split(",");
-                data.put("tags",tags);
-            }else{
-                data.put("tags",null);
+        for (User user : dataList){
+            if(DataUtil.isNotNull(user.getTags())){
+                String[] tags = user.getTags().split(",");
+                user.setTagArray(tags);
             }
         }
     }
