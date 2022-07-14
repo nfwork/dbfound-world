@@ -19,6 +19,21 @@
 		<filter name="user_name" express="user_name like ${@user_name}" />
 	</query>
 
+	<query name="getByIds">
+		<sql>
+			<![CDATA[
+			SELECT
+				u.user_id,
+				u.user_name,
+				u.user_code,
+				u.create_date,
+				u.create_by
+			FROM user u
+			where u.user_id in (${@ids})
+		 ]]>
+		</sql>
+	</query>
+
 	<execute name="add">
 		<sqls>
 			<collisionSql

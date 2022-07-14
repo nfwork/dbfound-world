@@ -362,3 +362,61 @@ _status为old则表面是老数据进行修改，为new则表示新数据进行�
   ]
 }
 ```
+
+
+### 11、集合参数
+dbfound 2.6.1后支持 dataType="collection" 用于处理sql集合类赋值，如in场景；
+```xml
+<query name="getByIds">
+    <sql>
+        <![CDATA[
+        SELECT
+            u.user_id,
+            u.user_name,
+            u.user_code,
+            u.create_date,
+            u.create_by
+        FROM user u
+        where u.user_id in (${@ids})
+     ]]>
+    </sql>
+</query>
+```
+请求参数如下
+```json
+{
+	"ids":[14,15]
+}
+```
+返回结果
+```json
+{
+    "success": true,
+    "message": "success",
+    "outParam": {},
+    "datas": [
+        {
+            "create_by": 1,
+            "user_code": "xiaoyang",
+            "user_id": 14,
+            "user_name": "小杨",
+            "create_date": "2022-06-29 16:12:24"
+        },
+        {
+            "create_by": 1,
+            "user_code": "xiaoming1",
+            "user_id": 15,
+            "user_name": "小明",
+            "create_date": "2022-07-09 09:02:22"
+        }
+    ],
+    "totalCounts": 2
+}
+```
+注意： 对于普通类型的集合直接使用即可，如果是对象类集合，则需要额外指定下属性路径；比如集合中位一个User对象，业务是需要取值user_id这个属性；
+```xml
+<param name="ids" dataType="collection" innerPath="user_id"/>
+```
+
+
+
