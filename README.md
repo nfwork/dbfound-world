@@ -354,7 +354,7 @@ _status为old则表面是老数据进行修改，为new则表示新数据进行�
     "user_name" : "小明",
     "user_code" : "",
     "time_from" : "2022-05-08",
-    "time_to"   : "",
+    "time_to"   : ""
   },
   "columns": [
     {"name": "user_code","content": "用户编号", "width": 150},
@@ -416,6 +416,51 @@ dbfound 2.6.1后支持 dataType="collection" 用于处理sql集合类赋值，�
 注意： 对于普通类型的集合直接使用即可，如果是对象类集合，则需要额外指定下属性路径；比如集合中位一个User对象，业务是需要取值user_id这个属性；
 ```xml
 <param name="ids" dataType="collection" innerPath="user_id"/>
+```
+
+### 12、适配器
+框架为query和execute提供了适配器，用于数据适配；
+```xml
+<query adapter="com.dbfound.world.UserAdapter">
+    <sql>
+     <![CDATA[
+        SELECT
+            u.user_id,
+            u.user_name,
+            u.user_code,
+            'sing,dance,chess' tags
+        FROM user u
+        #WHERE_CLAUSE#
+     ]]>
+    </sql>
+</query>
+```
+
+```java
+
+@Component
+public class UserAdapter implements QueryAdapter<User> {
+
+    @Override
+    public void beforeQuery(Context context, Map<String, Param> params) {
+    }
+
+    @Override
+    public void beforeCount(Context context, Map<String, Param> params, Count count) {
+    }
+
+    @Override
+    public void afterQuery(Context context, Map<String, Param> params, QueryResponseObject<User> responseObject) {
+        List<User> dataList = responseObject.getDatas();
+
+        for (User user : dataList){
+            if(DataUtil.isNotNull(user.getTags())){
+                String[] tags = user.getTags().split(",");
+                user.setTagArray(tags);
+            }
+        }
+    }
+}
 ```
 
 

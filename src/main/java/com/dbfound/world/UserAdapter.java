@@ -4,6 +4,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
+import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.model.bean.Param;
 import com.nfwork.dbfound.util.DataUtil;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,11 @@ public class UserAdapter implements ExecuteAdapter, QueryAdapter<User> {
 
     @Override
     public void beforeQuery(Context context, Map<String, Param> params) {
+    }
+
+    @Override
+    public void beforeCount(Context context, Map<String, Param> params, Count count) {
+
     }
 
     @Override

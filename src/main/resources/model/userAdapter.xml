@@ -13,7 +13,6 @@
 			#WHERE_CLAUSE#
 		 ]]>
 		</sql>
-		<filter name="user_name" express="user_name like ${@user_name}" />
 	</query>
 
 	<execute adapter="com.dbfound.world.UserAdapter">
