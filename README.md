@@ -158,7 +158,7 @@ CREATE TABLE `user` (
 	]
 }
 ```
-### 5、保持案列
+### 5、保存案列
 当user_id为空的时候调用新增，否则调用修改；注意otherwise 需要dbfound-3.0.1后 才支持；
 ```xml
 <execute name="save">
