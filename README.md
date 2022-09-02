@@ -458,7 +458,7 @@ public class UserAdapter implements QueryAdapter<User> {
     }
 }
 ```
-### 14、caseWhen条件判断案列
+### 13、caseWhen条件判断案列
 ```xml
 <execute name="caseWhen">
     <sqls>
@@ -477,7 +477,7 @@ public class UserAdapter implements QueryAdapter<User> {
 </execute>
 ```
 
-### 13、excel数据导出
+### 14、excel数据导出
 所有的query对象，都支持excel导出；拿user.xml中的 默认query（query没有name)举例；
 访问地址：http://localhost:8080/user.export 就可以将数据导出了；需要传入导出参数制定excel列信息；
 ```json
