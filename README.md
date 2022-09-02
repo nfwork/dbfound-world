@@ -470,7 +470,7 @@ public class UserAdapter implements QueryAdapter<User> {
                 <execute modelName="user" name="update" />
             </whenSql>
             <otherwiseSql>
-                <execute modelName="user" name="delte" />
+                <execute modelName="user" name="delete" />
             </otherwiseSql>
         </caseSql>
     </sqls>
