@@ -37,9 +37,9 @@
 				<whenSql when="${@user_id} is null">
 					<execute modelName="user" name="add"/>
 				</whenSql>
-				<whenSql when="${@user_id} is not null">
+				<otherwiseSql>
 					<execute modelName="user" name="update"/>
-				</whenSql>
+				</otherwiseSql>
 			</batchSql>
 		</sqls>
 	</execute>

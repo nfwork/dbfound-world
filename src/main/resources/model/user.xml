@@ -15,7 +15,7 @@
 		</sql>
 		<filter name="time_from" express="create_date &gt;= ${@time_from}" />
 		<filter name="time_to" express="create_date &lt;= ${@time_to}" />
-		<filter name="user_code" express="user_code like '#{@user_code}'" />
+		<filter name="user_code" express="user_code like ${@user_code}" />
 		<filter name="user_name" express="user_name like ${@user_name}" />
 	</query>
 
@@ -67,6 +67,17 @@
 				where user_id = ${@user_id}
 			  ]]>
 			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="save">
+		<sqls>
+			<whenSql when="${@user_id} is null">
+				<execute name="add"/>
+			</whenSql>
+			<otherwiseSql>
+				<execute name="update" />
+			</otherwiseSql>
 		</sqls>
 	</execute>
 

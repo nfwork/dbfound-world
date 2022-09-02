@@ -34,7 +34,7 @@ CREATE TABLE `user` (
         </sql>
         <filter name="time_from" express="create_date &gt;= ${@time_from}" />
         <filter name="time_to" express="create_date &lt;= ${@time_to}" />
-        <filter name="user_code" express="user_code like '#{@user_code}'" />
+        <filter name="user_code" express="user_code like ${@user_code}" />
         <filter name="user_name" express="user_name like ${@user_name}" />
     </query>
 </model>
@@ -158,7 +158,22 @@ CREATE TABLE `user` (
 	]
 }
 ```
-### 5、批量导入用户
+### 5、保持案列
+当user_id为空的时候调用新增，否则调用修改；主要otherwise 需要dbfound-3.0.1后 才支持；
+```xml
+<execute name="save">
+    <sqls>
+        <whenSql when="${@user_id} is null">
+            <execute name="add"/>
+        </whenSql>
+        <otherwiseSql>
+            <execute name="update" />
+        </otherwiseSql>
+    </sqls>
+</execute>
+```
+
+### 6、批量导入用户
 创建一个userBatch.xml文件，用来定义导入接口；
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -205,7 +220,7 @@ CREATE TABLE `user` (
   ]
 }
 ```
-### 6、批量查询案例 
+### 7、批量查询案例 
 有时候一个功能，查询条件有多个下拉框需要从数据库取值；我们可以一次性查询多个返回；
 在userBatch.xml中，添加一个名为batchGet的execute；
 ```xml
@@ -258,20 +273,20 @@ CREATE TABLE `user` (
     }
 }
 ```
-### 7、批量添加 有user_id就修改，没有就新增；
+### 8、批量添加 有user_id就修改，没有就新增；
 在userBatch.xml 新增一个名为batchAdd的execute，定义批量添加接口；注意新增和修改调用之前user.xml中定义的方法
 ```xml
 <execute name="batchAdd">
-    <sqls>
-        <batchSql sourcePath="userList">
-            <whenSql when="${@user_id} is null">
-                <execute modelName="user" name="add"/>
-            </whenSql>
-            <whenSql when="${@user_id} is not null">
-                <execute modelName="user" name="update"/>
-            </whenSql>
-        </batchSql>
-    </sqls>
+<sqls>
+    <batchSql sourcePath="userList">
+        <whenSql when="${@user_id} is null">
+            <execute modelName="user" name="add"/>
+        </whenSql>
+        <otherwiseSql>
+            <execute modelName="user" name="update"/>
+        </otherwiseSql>
+    </batchSql>
+</sqls>
 </execute>
 ```
 请求地址http://localhost:8080/userBatch.execute!batchAdd 请求参数如下：
@@ -290,7 +305,7 @@ CREATE TABLE `user` (
 	]
 }
 ```
-### 8、dbfound内置批量新增GridData
+### 9、dbfound内置批量新增GridData
 当提交数据中包含了一个GridData的数组，则会触发dbfound内置的批量新增；
 同时内置了一个addOrUpdate的特定execute名，根据属性 _status 动态判断是新增，还是修改；
 _status为old则表面是老数据进行修改，为new则表示新数据进行新增；分别调用model中 名为 add 和 update的execute方法；
@@ -314,7 +329,7 @@ _status为old则表面是老数据进行修改，为new则表示新数据进行�
 }
 ```
 
-### 9、多表插入 第一张表自动生成主键id，作为第二张表的外键
+### 10、多表插入 第一张表自动生成主键id，作为第二张表的外键
 ```xml
 <execute name="addTwoTable">
     <param name="user_id" ioType="out"/>
@@ -344,25 +359,6 @@ _status为old则表面是老数据进行修改，为new则表示新数据进行�
     </sqls>
 </execute>
 ```
-
-### 10、excel数据导出
-所有的query对象，都支持excel导出；拿user.xml中的 默认query（query没有name)举例；
-访问地址：http://localhost:8080/user.export 就可以将数据导出了；需要传入导出参数制定excel列信息；
-```json
-{
-  "parameters": {
-    "user_name" : "小明",
-    "user_code" : "",
-    "time_from" : "2022-05-08",
-    "time_to"   : ""
-  },
-  "columns": [
-    {"name": "user_code","content": "用户编号", "width": 150},
-    {"name": "user_name","content": "用户名称", "width": 150}
-  ]
-}
-```
-
 
 ### 11、集合参数
 dbfound 2.6.1后支持 dataType="collection" 用于处理sql集合类赋值，如in场景；
@@ -460,6 +456,24 @@ public class UserAdapter implements QueryAdapter<User> {
             }
         }
     }
+}
+```
+
+### 13、excel数据导出
+所有的query对象，都支持excel导出；拿user.xml中的 默认query（query没有name)举例；
+访问地址：http://localhost:8080/user.export 就可以将数据导出了；需要传入导出参数制定excel列信息；
+```json
+{
+  "parameters": {
+    "user_name" : "小明",
+    "user_code" : "",
+    "time_from" : "2022-05-08",
+    "time_to"   : ""
+  },
+  "columns": [
+    {"name": "user_code","content": "用户编号", "width": 150},
+    {"name": "user_name","content": "用户名称", "width": 150}
+  ]
 }
 ```
 
