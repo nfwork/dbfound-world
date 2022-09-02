@@ -159,7 +159,7 @@ CREATE TABLE `user` (
 }
 ```
 ### 5、保持案列
-当user_id为空的时候调用新增，否则调用修改；主要otherwise 需要dbfound-3.0.1后 才支持；
+当user_id为空的时候调用新增，否则调用修改；注意otherwise 需要dbfound-3.0.1后 才支持；
 ```xml
 <execute name="save">
     <sqls>
@@ -457,6 +457,24 @@ public class UserAdapter implements QueryAdapter<User> {
         }
     }
 }
+```
+### 14、caseWhen条件判断案列
+```xml
+<execute name="caseWhen">
+    <sqls>
+        <caseSql>
+            <whenSql when="${@flag} = 1">
+                <execute modelName="user" name="add" />
+            </whenSql>
+            <whenSql  when="${@flag} = 2">
+                <execute modelName="user" name="update" />
+            </whenSql>
+            <otherwiseSql>
+                <execute modelName="user" name="delte" />
+            </otherwiseSql>
+        </caseSql>
+    </sqls>
+</execute>
 ```
 
 ### 13、excel数据导出

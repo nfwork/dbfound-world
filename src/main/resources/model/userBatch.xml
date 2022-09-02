@@ -71,4 +71,20 @@
 			</executeSql>
 		</sqls>
 	</execute>
+
+	<execute name="caseWhen">
+		<sqls>
+			<caseSql>
+				<whenSql when="${@flag} = 1">
+					<execute modelName="user" name="add" />
+				</whenSql>
+				<whenSql  when="${@flag} = 2">
+					<execute modelName="user" name="update" />
+				</whenSql>
+				<otherwiseSql>
+					<execute modelName="user" name="delte" />
+				</otherwiseSql>
+			</caseSql>
+		</sqls>
+	</execute>
 </model>
