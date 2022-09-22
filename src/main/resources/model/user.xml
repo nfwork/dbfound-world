@@ -92,4 +92,16 @@
 			</batchSql>
 		</sqls>
 	</execute>
+
+	<execute name="deleteByList">
+		<param name="delete_num" ioType="out" dataType="number" />
+		<sqls>
+			<executeSql affectedCountParam="delete_num">
+				<![CDATA[
+				delete from user where user_id in( ${@user_id_list})
+				]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
 </model>

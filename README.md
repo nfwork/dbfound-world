@@ -477,7 +477,38 @@ public class UserAdapter implements QueryAdapter<User> {
 </execute>
 ```
 
-### 14、excel数据导出
+### 14、id集合删除，并返回成功删除的条数
+```xml
+<execute name="deleteByList">
+    <param name="delete_num" ioType="out" dataType="number" />
+    <sqls>
+        <executeSql affectedCountParam="delete_num">
+            <![CDATA[
+            delete from user where user_id in( ${@user_id_list})
+            ]]>
+        </executeSql>
+    </sqls>
+</execute>
+```
+请求参数
+```json
+{
+  "user_id_list":[1,2,3,18]
+}
+```
+响应体
+```json
+{
+    "success": true,
+    "message": "success",
+    "code": null,
+    "outParam": {
+        "delete_num": 1
+    }
+}
+```
+
+### 15、excel数据导出
 所有的query对象，都支持excel导出；拿user.xml中的 默认query（query没有name)举例；
 访问地址：http://localhost:8080/user.export 就可以将数据导出了；需要传入导出参数制定excel列信息；
 ```json
