@@ -1,4 +1,4 @@
-package com.dbfound.world;
+package com.dbfound.world.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

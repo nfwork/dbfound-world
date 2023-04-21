@@ -1,5 +1,6 @@
-package com.dbfound.world;
+package com.dbfound.world.adapter;
 
+import com.dbfound.world.entity.User;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;

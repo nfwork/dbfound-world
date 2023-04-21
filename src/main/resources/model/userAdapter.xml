@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
 
-	<query adapter="com.dbfound.world.UserAdapter">
+	<query adapter="com.dbfound.world.adapter.UserAdapter">
 		<sql>
 		 <![CDATA[
 			SELECT
@@ -15,7 +15,20 @@
 		</sql>
 	</query>
 
-	<execute adapter="com.dbfound.world.UserAdapter">
+	<query name="basic" entity="com.dbfound.world.entity.User">
+		<sql>
+		 <![CDATA[
+			SELECT
+				u.user_id,
+				u.user_name,
+				u.user_code,
+				'sing,dance,chess' tags
+			FROM user u
+			]]>
+		</sql>
+	</query>
+
+	<execute adapter="com.dbfound.world.adapter.UserAdapter">
 		<sqls>
 			<executeSql>
 				<![CDATA[

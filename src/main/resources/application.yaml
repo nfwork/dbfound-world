@@ -7,7 +7,7 @@ dbfound:
     open-session: false
   datasource:
     db0:
-      url: jdbc:mysql://192.168.1.111:3306/dbfound?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
+      url: jdbc:mysql://smysql01.sz.gomo.com:3306/dbfound?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
       driver-class-name: com.mysql.cj.jdbc.Driver
       username:
       password:
@@ -19,3 +19,4 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+    property-naming-strategy: SNAKE_CASE

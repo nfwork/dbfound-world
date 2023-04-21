@@ -417,7 +417,8 @@ dbfound 2.6.1后支持 dataType="collection" 用于处理sql集合类赋值，�
 ### 12、适配器
 框架为query和execute提供了适配器，用于数据适配；
 ```xml
-<query adapter="com.dbfound.world.UserAdapter">
+
+<query adapter="com.dbfound.world.adapter.UserAdapter">
     <sql>
      <![CDATA[
         SELECT
