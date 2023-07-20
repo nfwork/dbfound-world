@@ -509,7 +509,7 @@ public class UserAdapter implements QueryAdapter<User> {
 }
 ```
 
-### 16、查询返回List<Integer>数据
+### 15、查询返回List<Integer>数据
 通常情况下，查询返回的是一个对象；偶尔也有只需要一个list简单类型的情况；3.3.5后开始支持；
 ```xml
 <query name="getAll" entity="java.lang.Integer">
@@ -537,7 +537,7 @@ public class UserAdapter implements QueryAdapter<User> {
 }
 ```
 
-### 15、excel数据导出
+### 16、excel数据导出
 所有的query对象，都支持excel导出；拿user.xml中的 默认query（query没有name)举例；
 访问地址：http://localhost:8080/user.export 就可以将数据导出了；需要传入导出参数制定excel列信息；
 ```json
