@@ -19,6 +19,12 @@
 		<filter name="user_name" express="user_name like ${@user_name}" />
 	</query>
 
+	<query name="getAll" entity="java.lang.Integer">
+		<sql>
+			SELECT u.user_id FROM user u order by user_id
+		</sql>
+	</query>
+
 	<query name="getByIds">
 		<sql>
 			<![CDATA[
