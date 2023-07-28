@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
+
+    <query>
+        <sql>
+            select user_id
+            <sqlPart type="for" begin="," sourcePath="fields" separator=",">
+                #{@value}
+            </sqlPart>
+            from user
+            <sqlPart type="if" condition="${@sort} is not null">
+                order by #{@sort}
+            </sqlPart>
+        </sql>
+    </query>
+
+    <execute>
+        <sqls>
+            <executeSql>
+                INSERT INTO user
+                (user_code,
+                 user_name,
+                 password,
+                 create_by,
+                 create_date)
+                VALUES
+                <sqlPart type="for" sourcePath="userList">
+                   (${@user_code},
+                    ${@user_name},
+                    ${@password},
+                    1,
+                    NOW())
+                </sqlPart>
+                ON DUPLICATE KEY update user_name = values(user_name)
+            </executeSql>
+        </sqls>
+    </execute>
+
+</model>

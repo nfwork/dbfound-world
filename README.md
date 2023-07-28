@@ -537,7 +537,73 @@ public class UserAdapter implements QueryAdapter<User> {
 }
 ```
 
-### 16、excel数据导出
+### 16、动态sql使用
+dbfound在3.3.6之前对动态sql支持较差，3.3.6引入sqlPart标签，实现动态sql；
+sqlPart分为if和for两类，分别对于if逻辑判断、for循环场景
+
+1、query中使用sqlPart动态生成sql； 根据fields参数判断查询那些字段，根据sort判断是否需要排序
+```xml
+<query>
+    <sql>
+        select user_id
+        <sqlPart type="for" begin="," sourcePath="fields" separator=",">
+            #{@value}
+        </sqlPart>
+        from user
+        <sqlPart type="if" condition="${@sort} is not null">
+            order by #{@sort}
+        </sqlPart>
+    </sql>
+</query>
+```
+请求参数
+```json
+{
+	"fields":["user_code","user_name"],
+	"sort":"user_code desc"
+}
+```
+
+2、execute中使用sqlPart批量新增，新增的用户数据放入到userList数组中
+```xml
+<execute>
+    <sqls>
+        <executeSql>
+            INSERT INTO user
+            (user_code,
+             user_name,
+             password,
+             create_by,
+             create_date)
+            VALUES
+            <sqlPart type="for" sourcePath="userList">
+               (${@user_code},
+                ${@user_name},
+                ${@password},
+                1,
+                NOW())
+            </sqlPart>
+            ON DUPLICATE KEY update user_name = values(user_name)
+        </executeSql>
+    </sqls>
+</execute>
+```
+请求参数
+```json
+{
+    "userList": [{
+        "user_name":"xiaoming",
+        "user_code":"xiaoming5",
+        "password":123
+    },{
+        "user_name":"xiaoming",
+        "user_code":"xiaoming6",
+        "password":123
+    }]
+}
+```
+
+### 17、excel数据导出
 所有的query对象，都支持excel导出；拿user.xml中的 默认query（query没有name)举例；
 访问地址：http://localhost:8080/user.export 就可以将数据导出了；需要传入导出参数制定excel列信息；
 ```json
