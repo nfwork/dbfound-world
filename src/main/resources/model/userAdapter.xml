@@ -17,23 +17,19 @@
 
 	<query name="basic" entity="com.dbfound.world.entity.User">
 		<sql>
-		 <![CDATA[
 			SELECT
 				u.user_id,
 				u.user_name,
 				u.user_code,
 				'sing,dance,chess' tags
 			FROM user u
-			]]>
 		</sql>
 	</query>
 
 	<execute adapter="com.dbfound.world.adapter.UserAdapter">
 		<sqls>
 			<executeSql>
-				<![CDATA[
-					delete from user where user_code = ${@user_code}
-				]]>
+				delete from user where user_code = ${@user_code}
 			</executeSql>
 			<collisionSql
 				where="not exists (select 1 from user where user_code= 'xiaoming')"

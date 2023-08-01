@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
-	<query>
+	<query exportSize="500000">
 		<sql>
-		 <![CDATA[
 			SELECT
 				u.user_id,
 				u.user_name,
@@ -11,7 +10,6 @@
 				u.create_by
 			FROM user u
 			#WHERE_CLAUSE#
-		 ]]>
 		</sql>
 		<filter name="time_from" express="create_date &gt;= ${@time_from}" />
 		<filter name="time_to" express="create_date &lt;= ${@time_to}" />
@@ -27,7 +25,6 @@
 
 	<query name="getByIds">
 		<sql>
-			<![CDATA[
 			SELECT
 				u.user_id,
 				u.user_name,
@@ -36,7 +33,6 @@
 				u.create_by
 			FROM user u
 			where u.user_id in (${@ids})
-		 ]]>
 		</sql>
 	</query>
 
@@ -46,7 +42,6 @@
 				where="exists (select 1 from user where user_code= ${@user_code})"
 				message="用户编号:#{@user_code} 已经使用！" />
 			<executeSql>
-			 <![CDATA[
 			    INSERT INTO user
 				   (user_code,
 					user_name,
@@ -59,7 +54,6 @@
 					${@password},
 					1,
 					NOW())
-			 ]]>
 			</executeSql>
 		</sqls>
 	</execute>
@@ -67,11 +61,9 @@
 	<execute name="update">
 		<sqls>
 			<executeSql>
-			  <![CDATA[
 				update user set
 					user_name = ${@user_name}
 				where user_id = ${@user_id}
-			  ]]>
 			</executeSql>
 		</sqls>
 	</execute>
@@ -91,9 +83,7 @@
 		<sqls>
 			<batchSql sourcePath="userList">
 				<executeSql>
-					<![CDATA[
-						delete from user where user_id= ${@user_id}
-					  ]]>
+					delete from user where user_id= ${@user_id}
 				</executeSql>
 			</batchSql>
 		</sqls>
@@ -103,9 +93,7 @@
 		<param name="delete_num" ioType="out" dataType="number" />
 		<sqls>
 			<executeSql affectedCountParam="delete_num">
-				<![CDATA[
 				delete from user where user_id in( ${@user_id_list})
-				]]>
 			</executeSql>
 		</sqls>
 	</execute>
