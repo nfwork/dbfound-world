@@ -37,4 +37,26 @@
         </sqls>
     </execute>
 
+    <query name="getGroup">
+        <sql>
+            select count(user_id) as num,
+                  #{@group_fields}
+            from user
+            group by #{@group_fields}
+        </sql>
+    </query>
+
+    <query name="getGroup1">
+        <sql>
+            select count(user_id) as num
+            <sqlPart type="for" begin="," sourcePath="group_fields" separator=",">
+                #{@value}
+            </sqlPart>
+            from user
+            <sqlPart type="for" begin="group by " sourcePath="group_fields">
+                #{@value}
+            </sqlPart>
+        </sql>
+    </query>
+
 </model>
