@@ -15,6 +15,16 @@
         </sql>
     </query>
 
+    <query name="sec" adapter="com.dbfound.world.adapter.UserPartAdapter">
+        <sql>
+            select user_id
+            <sqlPart type="for" begin="," sourcePath="fields" separator=",">
+                #{@value}
+            </sqlPart>
+            from user
+        </sql>
+    </query>
+
     <execute>
         <sqls>
             <executeSql>
