@@ -615,8 +615,8 @@ sqlPart分为if和for两类，分别对于if逻辑判断、for循环场景
     "time_to"   : ""
   },
   "columns": [
-    {"name": "user_code","content": "用户编号", "width": 150},
-    {"name": "user_name","content": "用户名称", "width": 150}
+    {"name": "user_code","title": "用户编号", "width": 150},
+    {"name": "user_name","title": "用户名称", "width": 150}
   ]
 }
 ```

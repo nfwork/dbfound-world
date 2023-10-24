@@ -18,9 +18,9 @@ public class UserPartAdapter implements QueryAdapter<Map<String,Object>> {
 
     @Override
     public void beforeQuery(Context context, Map<String, Param> params) {
-        List<?> fields = (List<?>) context.getData("param.fields");
-        EnumTypeHandler<?> handler = EnumHandlerFactory.getEnumHandler(UserField.class);
-        fields = fields.stream().map(v->handler.locateEnum((String) v)).filter(Objects::nonNull).collect(Collectors.toList());
-        context.setParamData("fields",fields);
+        List<String> fields = context.getList("param.fields");
+        EnumTypeHandler<UserField> handler = EnumHandlerFactory.getEnumHandler(UserField.class);
+        List<UserField> userFields = fields.stream().map(handler::locateEnum).filter(Objects::nonNull).collect(Collectors.toList());
+        context.setParamData("fields",userFields);
     }
 }
