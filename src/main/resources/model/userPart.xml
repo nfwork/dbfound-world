@@ -47,6 +47,25 @@
         </sqls>
     </execute>
 
+    <execute name="update">
+        <param name="user_name" dataType="varchar" emptyAsNull="false" />
+		<sqls>
+			<executeSql>
+				update user
+				   set
+				    <sqlTrim>
+						<sqlPart condition="${@user_name} is not null">
+                            user_name = ${@user_name},
+                        </sqlPart>
+                        <sqlPart condition="${@user_code} is not null">
+                            user_code = ${@user_code},
+                        </sqlPart>
+					</sqlTrim>
+                where user_id = ${@user_id}
+			</executeSql>
+		</sqls>
+	</execute>
+
     <query name="getGroup">
         <sql>
             select count(user_id) as num,
