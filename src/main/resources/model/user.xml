@@ -17,6 +17,21 @@
 		<filter name="user_name" express="user_name like ${@user_name}" />
 	</query>
 
+	<execute name="import">
+		<param name="users_file" dataType="file" value="/Users/admin/users.xlsx" />
+		<sqls>
+			<excelReader sourceParam="users_file" rootPath="users"/>
+			<batchExecuteSql sourcePath="users[0].value">
+				insert into user
+				    (user_code, user_name, password, create_date)
+				values
+				#BATCH_TEMPLATE_BEGIN#
+				    (${@用户账号}, ${@用户昵称}, 1, now())
+				#BATCH_TEMPLATE_END#
+			</batchExecuteSql>
+		</sqls>
+	</execute>
+
 	<query name="getAll" entity="java.lang.Integer">
 		<sql>
 			SELECT u.user_id FROM user u order by user_id
