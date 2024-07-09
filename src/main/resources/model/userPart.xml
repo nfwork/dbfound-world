@@ -15,11 +15,13 @@
         </sql>
     </query>
 
-    <query name="sec" adapter="com.dbfound.world.adapter.UserPartAdapter">
+    <query name="sec">
         <sql>
             select user_id
-            <sqlPart type="for" begin="," sourcePath="fields" separator=",">
-                #{@value}
+            <sqlPart type="for" begin="," sourcePath="fields" separator="," item="field">
+                <sqlPart condition="${@field} in ('user_code','user_name')">
+					#{@field}
+				</sqlPart>
             </sqlPart>
             from user
         </sql>
