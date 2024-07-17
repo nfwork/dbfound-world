@@ -4,12 +4,13 @@
 
     <query>
         <sql>
-            select user_id
-            <sqlPart type="for" begin="," sourcePath="fields" separator=",">
-                #{@value}
-            </sqlPart>
+            select
+                <sqlPart type="if" sourcePath="fields">
+                    #{@fields},
+                </sqlPart>
+                user_id
             from user
-            <sqlPart type="if" condition="${@sort} is not null">
+            <sqlPart type="if" sourcePath="sort">
                 order by #{@sort}
             </sqlPart>
         </sql>
