@@ -28,6 +28,22 @@
         </sql>
     </query>
 
+    <query name="sec2">
+        <sql>
+            select user_id
+                <sqlPart condition="'user_name' in (${@fields})">
+                    ,user_name
+                </sqlPart>
+                <sqlPart condition="'user_code' in (${@fields})">
+                    ,user_code
+                </sqlPart>
+                <sqlPart condition="'password' in (${@fields})">
+                    ,password
+                </sqlPart>
+            from user
+        </sql>
+    </query>
+
     <execute>
         <sqls>
             <executeSql>
