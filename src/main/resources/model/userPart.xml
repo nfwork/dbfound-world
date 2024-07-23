@@ -20,7 +20,7 @@
         <sql>
             select user_id
             <sqlPart type="for" begin="," sourcePath="fields" separator="," item="field">
-                <sqlPart condition="${@field} in ('user_code','user_name')">
+                <sqlPart condition="${@field} in ('user_code','user_name','password')">
 					#{@field}
 				</sqlPart>
             </sqlPart>
@@ -31,6 +31,7 @@
     <query name="sec2">
         <sql>
             select user_id
+            <sqlPart type="if" sourcePath="fields">
                 <sqlPart condition="'user_name' in (${@fields})">
                     ,user_name
                 </sqlPart>
@@ -40,6 +41,7 @@
                 <sqlPart condition="'password' in (${@fields})">
                     ,password
                 </sqlPart>
+            </sqlPart>
             from user
         </sql>
     </query>
