@@ -10,10 +10,13 @@
                 </sqlPart>
                 user_id
             from user
+            #WHERE_CLAUSE#
             <sqlPart type="if" sourcePath="sort">
                 order by #{@sort}
             </sqlPart>
         </sql>
+        <filter name="user_name" dataType="varchar" express="user_name like ${@user_name}" />
+        <filter name="user_code" dataType="collection" express="user_code in (${@user_code})" />
     </query>
 
     <query name="sec">
