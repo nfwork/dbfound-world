@@ -28,12 +28,11 @@
 
 	<execute>
 		<sqls>
+			<collisionSql where="${@user_code} = 'xiaoming'"
+						  message="用户编号:#{@user_code} 不能被删除！" />
 			<executeSql>
 				delete from user where user_code = ${@user_code}
 			</executeSql>
-			<collisionSql
-				where="not exists (select 1 from user where user_code= 'xiaoming')"
-				message="用户编号:#{@user_code} 不能被删除！" />
 		</sqls>
 	</execute>
 
