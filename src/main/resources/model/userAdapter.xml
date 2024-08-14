@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
 
-	<query adapter="com.dbfound.world.adapter.UserAdapter">
+	<query adapter="com.dbfound.world.adapter.UserAdapter
+					com.dbfound.world.adapter.CollectionParamAdapter">
 		<sql>
-		 <![CDATA[
 			SELECT
 				u.user_id,
 				u.user_name,
@@ -11,8 +11,8 @@
 				'sing,dance,chess' tags
 			FROM user u
 			#WHERE_CLAUSE#
-		 ]]>
 		</sql>
+		<filter name="user_code" dataType="collection" express="user_code in (${@user_code})" />
 	</query>
 
 	<query name="basic" entity="com.dbfound.world.entity.User">
@@ -26,7 +26,7 @@
 		</sql>
 	</query>
 
-	<execute adapter="com.dbfound.world.adapter.UserAdapter">
+	<execute>
 		<sqls>
 			<executeSql>
 				delete from user where user_code = ${@user_code}
