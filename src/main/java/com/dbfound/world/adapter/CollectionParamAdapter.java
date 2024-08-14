@@ -30,7 +30,7 @@ public class CollectionParamAdapter implements ObjectQueryAdapter, ExecuteAdapte
         for(Param param : params.values()){
             if(param.getDataType() == DataType.COLLECTION && param.getValue() instanceof String){
                 String value = param.getStringValue();
-                value = value.replaceAll("[\\s,;]",",");
+                value = value.replaceAll("[\\s,;]+",",");
                 param.setValue(value);
             }
         }
