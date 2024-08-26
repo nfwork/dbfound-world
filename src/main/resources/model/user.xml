@@ -18,11 +18,12 @@
 	</query>
 
 	<execute name="import">
+		<param name="add_num" dataType="number" ioType="out" />
 		<param name="users_file" dataType="file" value="/Users/admin/users.xlsx" />
 		<sqls>
 			<excelReader sourceParam="users_file" rootPath="users"/>
-			<batchExecuteSql sourcePath="users[0].value">
-				insert into user
+			<batchExecuteSql sourcePath="users[0]" affectedCountParam="add_num">
+				insert ignore into user
 				    (user_code, user_name, password, create_date)
 				values
 				#BATCH_TEMPLATE_BEGIN#
