@@ -30,7 +30,7 @@
 		<sql>
 			select u.*, r.role_description, r.role_code
 			  from sys_user u
-			      left join sys_role r on u.role_id = r.role_id
+			      inner join sys_role r on u.role_id = r.role_id
 			 #WHERE_CLAUSE#
 		</sql>
 		<filter name="role_code" dataType="varchar" express="r.role_code = ${@role_code}"/>
