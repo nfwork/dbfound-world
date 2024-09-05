@@ -5,10 +5,7 @@ import com.nfwork.dbfound.model.adapter.ObjectQueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.model.bean.Param;
 import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.expression.BinaryExpression;
-import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.PlainSelect;
@@ -48,9 +45,6 @@ public class CountAdapter implements ObjectQueryAdapter {
         int removeSize = 0;
         while (joinIterator.hasNext()) {
             Join join = joinIterator.next();
-            if(!isCommonJoin(join.getOnExpression())){
-                continue;
-            }
             String alias = null;
             if(join.getRightItem().getAlias() != null) {
                 alias = join.getRightItem().getAlias().getName();
@@ -68,26 +62,6 @@ public class CountAdapter implements ObjectQueryAdapter {
         }else {
             return select.toString();
         }
-    }
-
-    private boolean isCommonJoin(Expression expression){
-        if(expression instanceof BinaryExpression){
-            BinaryExpression binaryExpression = (BinaryExpression) expression;
-            boolean left = false;
-            boolean right = false;
-            if (binaryExpression.getLeftExpression() instanceof Column) {
-                left = true;
-            }else if(binaryExpression.getLeftExpression() instanceof BinaryExpression){
-                left = isCommonJoin(binaryExpression.getLeftExpression());
-            }
-            if (binaryExpression.getRightExpression() instanceof Column) {
-                right = true;
-            }else if(binaryExpression.getRightExpression() instanceof BinaryExpression){
-                right = isCommonJoin(binaryExpression.getRightExpression());
-            }
-            return left && right;
-        }
-        return false;
     }
 
     private final static Pattern executeParamPattern = Pattern.compile("[ =,(%+\\-*/][0-9a-zA-Z_]+\\.");
