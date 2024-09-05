@@ -26,6 +26,16 @@
 		</sql>
 	</query>
 
+	<query name="count" adapter="com.dbfound.world.adapter.CountAdapter" >
+		<sql>
+			select u.*, r.role_description, r.role_code
+			  from sys_user u
+			      left join sys_role r on u.role_id = r.role_id
+			 #WHERE_CLAUSE#
+		</sql>
+		<filter name="role_code" dataType="varchar" express="r.role_code = ${@role_code}"/>
+	</query>
+
 	<execute>
 		<sqls>
 			<collisionSql where="${@user_code} = 'xiaoming'"
