@@ -64,10 +64,13 @@ public class CountAdapter implements ObjectQueryAdapter {
         }
     }
 
-    private final static Pattern executeParamPattern = Pattern.compile("[ ()+\\-/*=,][0-9a-zA-Z_]+\\.");
+    private final static Pattern executeParamPattern = Pattern.compile("[ =,(%+\\-*/][0-9a-zA-Z_]+\\.");
 
     private Set<String> findAlias(String sql){
         Set<String> set = new HashSet<>();
+        if (sql==null || sql.length()<5){
+            return set;
+        }
         Matcher m = executeParamPattern.matcher(sql);
         while (m.find()) {
             String param = m.group();
