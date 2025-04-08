@@ -26,4 +26,5 @@ public class UserAdapter implements ExecuteAdapter, QueryAdapter<User> {
             }
         }
     }
+
 }
