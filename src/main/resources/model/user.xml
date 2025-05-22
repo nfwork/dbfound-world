@@ -75,8 +75,9 @@
 	</execute>
 
 	<execute name="update">
+		<param name="update_num" dataType="number" ioType="out" />
 		<sqls>
-			<executeSql>
+			<executeSql affectedCountParam="update_num">
 				update user set
 					user_name = ${@user_name}
 				where user_id = ${@user_id}
