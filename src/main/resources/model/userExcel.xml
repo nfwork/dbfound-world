@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
+
+    <query>
+        <sql>
+            SELECT
+                u.user_id,
+                u.user_name,
+                u.user_code,
+                u.create_date,
+                u.create_by
+            FROM user u
+            #WHERE_CLAUSE#
+        </sql>
+        <filter name="user_code" express="user_code like ${@user_code}" />
+        <filter name="user_name" express="user_name like ${@user_name}" />
+    </query>
+
+    <execute>
+        <sqls>
+            <batchExecuteSql sourcePath="userList">
+                INSERT INTO user
+                (user_code,
+                 user_name,
+                 password,
+                 create_by,
+                 create_date)
+                VALUES
+                    #BATCH_TEMPLATE_BEGIN#
+                    (${@user_code},
+                    ${@user_name},
+                    '123456',
+                    1,
+                    NOW())
+                    #BATCH_TEMPLATE_END#
+                ON DUPLICATE KEY update user_name = values(user_name)
+            </batchExecuteSql>
+        </sqls>
+    </execute>
+
+</model>
