@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
+
+    <execute>
+		<sqls>
+			<collisionSql where="instr('a barbar','ba') = 0" message="hi instr" />
+			<collisionSql where="locate('bar','barbar') = 0" message="hi locate" />
+			<collisionSql where="locate('bar','barbar',2) = 0" message="hi locate pos" />
+			<collisionSql where="find_in_set(lower('abC'),'1,abc,efg') = 0" message="hello" />
+            <collisionSql where=" ${@group} is null
+                or substring_index(substring_index(${@group},'-',1),'-',-1) not in ('zdy','cpc','deeplink','roi','unlimited')
+                or substring_index(substring_index(${@group},'-',2),'-',-1) not in ('app','noapp','unlimited')
+                or substring_index(substring_index(${@group},'-',3),'-',-1) not in ('am','pm','em','all')
+                or substring_index(substring_index(${@group},'-',4),'-',-1) not in ('1','2','3','4')"
+                          message="#{@group} 格式校验不通过" />
+		</sqls>
+	</execute>
+
+	<execute name="hello">
+		<sqls>
+			<collisionSql where="char_length(${@message}) &lt; 3" message="参数不能小于3个字符串" />
+			<collisionSql where="isnull(${@message})" message="参数message不能为空" />
+			<collisionSql where="start_with(${@message},'abc')" message="不能以abc开头" />
+			<collisionSql where="substring(${@message},-3) = 'cpc'" message="不能以cpc结尾" />
+			<collisionSql where="locate('key',${@message})" message="不能包含单词key" />
+			<collisionSql where="find_in_set(${@message},'xyz,efg')" message="不能是xyz,efg" />
+		</sqls>
+	</execute>
+
+</model>
