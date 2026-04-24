@@ -11,10 +11,10 @@
 			FROM user u
 			#WHERE_CLAUSE#
 		</sql>
-		<filter name="time_from" express="create_date &gt;= ${@time_from}" />
-		<filter name="time_to" express="create_date &lt;= ${@time_to}" />
-		<filter name="user_code" express="user_code like ${@user_code}" />
-		<filter name="user_name" express="user_name like ${@user_name}" />
+		<filter name="time_from" dataType="date" express="create_date &gt;= ${@time_from}" />
+		<filter name="time_to" dataType="date" express="create_date &lt;= ${@time_to}" />
+		<filter name="user_code" dataType="varchar" express="user_code like ${@user_code}" />
+		<filter name="user_name" dataType="varchar" express="user_name like ${@user_name}" />
 	</query>
 	<execute name="import">
 		<param name="add_num" dataType="number" ioType="out" />
