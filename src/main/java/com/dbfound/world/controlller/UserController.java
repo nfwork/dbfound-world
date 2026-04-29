@@ -37,6 +37,11 @@ public class UserController {
         return userService.search(params);
     }
 
+    @RequestMapping("/user/getById")
+    public ResponseObject getById(@RequestParam(name = "user_id") Integer userId) {
+        return userService.getById(userId);
+    }
+
     @RequestMapping("/user/update")
     public ResponseObject updateUser(@RequestBody User user) {
         return userService.updateUser(user);

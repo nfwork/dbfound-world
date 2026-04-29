@@ -29,6 +29,12 @@ public class UserService {
         return modelExecutor.query(context, "user", "");
     }
 
+    public ResponseObject getById(Integer userId) {
+        Context context = new Context()
+                .withParam("user_id", userId);
+        return modelExecutor.query(context, "user", "getById");
+    }
+
     public ResponseObject updateUser(User user) {
         Context context = new Context()
                 .withBeanParam(user)

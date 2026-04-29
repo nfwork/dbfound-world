@@ -51,6 +51,20 @@
 		</sql>
 	</query>
 
+	<query name="getById">
+		<sql>
+			SELECT
+				u.user_id,
+				u.user_name,
+				u.user_code,
+				u.create_date,
+				u.create_by
+			FROM user u
+			where u.user_id = ${@user_id}
+		</sql>
+		<verifier express="${@user_id} is null or ${@user_id} &lt; 1" message="user_id不能为空且不能小于1" />
+	</query>
+
 	<execute name="add">
 		<sqls>
 			<collisionSql
