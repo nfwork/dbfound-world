@@ -20,7 +20,8 @@ public class JacksonConfig {
     @PostConstruct
     public void objectMapper() {
         SimpleModule module = new SimpleModule();
-        module.addSerializer(ResponseObject.class, new JsonUtil.ResponseObjectSerializer());
+        //ResponseObjectSerializer的作用主要是为了适配dbfoundui，让outParam和totalCounts不转化为下划线，非dbfoundui项目不用配置
+        //module.addSerializer(ResponseObject.class, new JsonUtil.ResponseObjectSerializer());
         module.addSerializer(Temporal.class, new JsonUtil.TemporalSerializer());
         module.addSerializer(Enum.class, new JsonUtil.EnumSerializer());
         module.addSerializer(Date.class, new JsonUtil.DateSerializer());
