@@ -1,7 +1,52 @@
-## dbfound-world 后台接口十大场景案例，原来后台可以如此简单
-### 准备工作
-创建一个springboot项目，引入dbfound-spring-boot-start依赖，写好启动类；
-创建数据库表user；配置好dbfound数据库链接信息；
+# dbfound-world
+
+`dbfound-world` 是一个基于 Spring Boot + dbfound 的前后端分离纯接口示例项目，用来演示如何通过 `dbfound` 快速定义查询、保存、批量处理、动态 SQL、适配器、Excel 导入导出等后台接口能力。
+
+本仓库侧重展示一个可运行的后端接口工程结构。具体 XML 写法、请求参数和返回结果示例已整理到 dbfound wiki，不在 README 中重复维护。
+
+- 案例文档：[dbfound example](https://github.com/nfwork/dbfound/wiki/dbfound-example)
+- dbfound 仓库：[nfwork/dbfound](https://github.com/nfwork/dbfound)
+
+## 项目特点
+
+- 纯后端接口项目，不依赖前端页面。
+- 基于 `dbfound-spring-boot-starter`，接口主要由 `resources/model/*.xml` 声明。
+- 同时包含 dbfound 自动接口和 Java Service 手动调用 `ModelExecutor` 两种使用方式。
+- 已配置跨域，适合作为前端分离项目的接口服务。
+- 内置常见场景示例：查询、增删改、批量处理、动态 SQL、集合参数、适配器、Excel 导入导出。
+
+## 技术栈
+
+- Java 8
+- Spring Boot 2.7.15
+- dbfound 3.6.8
+- Maven
+- MySQL
+
+## 目录结构
+
+```text
+.
+├── pom.xml
+├── src/main/java/com/dbfound/world
+│   ├── DBFoundApp.java                 # 应用启动类
+│   ├── adapter/                        # dbfound 查询/执行适配器示例
+│   ├── config/                         # 跨域、JSON 序列化配置
+│   ├── controlller/                    # 自定义 REST 接口示例
+│   ├── dfunction/                      # 自定义函数示例
+│   ├── entity/                         # 示例实体
+│   └── service/                        # Java API 调用 dbfound 示例
+└── src/main/resources
+    ├── application.yaml                # dbfound 与数据源配置
+    └── model/                          # dbfound model XML
+```
+
+## 快速启动
+
+### 1. 准备数据库
+
+创建 MySQL 数据库，并准备示例表：
+
 ```sql
 CREATE TABLE `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -11,615 +56,86 @@ CREATE TABLE `user` (
   `create_date` datetime NOT NULL,
   `create_by` int(11) NOT NULL,
   PRIMARY KEY (`user_id`),
-  UNIQUE KEY  (`user_code`) 
+  UNIQUE KEY (`user_code`)
 );
 ```
-### 1、查询案例
-创建文件user.xml放入到resources下的model目录，定义用户查询接口，可以根据user_name、user_code、time_from、time_to进行查询； limit和start控制分页逻辑；
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
-    <query>
-        <sql>
-        <![CDATA[
-            SELECT
-                u.user_id,
-                u.user_name,
-                u.user_code,
-                u.create_date,
-                u.create_by
-            FROM user u
-            #WHERE_CLAUSE#
-        ]]>
-        </sql>
-        <filter name="time_from" express="create_date &gt;= ${@time_from}" />
-        <filter name="time_to" express="create_date &lt;= ${@time_to}" />
-        <filter name="user_code" express="user_code like ${@user_code}" />
-        <filter name="user_name" express="user_name like ${@user_name}" />
-    </query>
-</model>
-```
-请求地址http://localhost:8080/user.query 即可调用该接口，demo中采用Content-Type：application/json方式请求；
-```json
-{
-    "user_name" : "小明",
-    "user_code" : "",
-    "time_from" : "2022-05-08",
-    "time_to"   : "",
-    "limit"     : 10,
-    "start"     : 0
-}
-```
-返回结构如下：
-```json
-{
-    "success": true,
-    "message": "success",
-    "outParam": null,
-    "datas": [
-        {
-            "create_by": 1,
-            "password": "123456123",
-            "user_code": "xiaoming",
-            "user_id": 1,
-            "user_name": "小明",
-            "create_date": "2021-08-01 00:00:00"
-        }
-    ],
-    "totalCounts": 1
-}
-```
-### 2、新增案例
-在案例1中创建的user.xml中,创建一个名为add的execute，用来添加用户;正常情况下create_by从登陆session中获取，案例中为了方便直接写死1；
-```xml
-<execute name="add">
-    <sqls>
-        <collisionSql
-            where="exists (select 1 from user where user_code= ${@user_code})"
-            message="用户编号:#{@user_code} 已经使用！" />
-        <executeSql>
-         <![CDATA[
-        INSERT INTO user
-               (user_code,
-                user_name,
-                password,
-                create_by,
-                create_date)
-            VALUES
-                (${@user_code},
-                ${@user_name},
-                ${@password},
-                1,
-                NOW())
-         ]]>
-        </executeSql>
-    </sqls>
-</execute>
-```
-请求地址http://localhost:8080/user.execute!add 传入如下参数：
-```json
-{
-	"user_name" : "小明",
-	"user_code" : "xiaoming",
-	"password"  : "123456123"
-}
-```
-返回结果如下：
-```json
-{
-    "success": true,
-    "message": "success",
-    "outParam": null
-}
-```
-### 3、修改案例
-创建一个名为update的execute，用来修改用户
-```xml
-<execute name="update">
-    <sqls>
-        <executeSql>
-          <![CDATA[
-            update user set 
-                user_name = ${@user_name}
-            where user_id = ${@user_id} 
-          ]]>
-        </executeSql>
-    </sqls>
-</execute>
-```
-请求地址http://localhost:8080/user.execute!update ，请求参数如下：
-```json
-{
-	"user_name" : "小明1",
-	"user_id" : 1
-}
-```
-### 4、删除案例
-创建一个名为delete的execute，用来删除用户；这次我们允许批量删除
-```xml
-<execute name="delete">
-    <sqls>
-        <batchSql sourcePath="userList">
-            <executeSql>
-            <![CDATA[
-                delete from sys_user where user_id= ${@user_id} 
-            ]]>
-            </executeSql>
-        </batchSql>
-    </sqls>
-</execute>
-```
-请求地址 http://localhost:8080/user.execute!delete ,请求参数如下：
-```json
-{
-	"userList":[
-		{"user_id":1},
-		{"user_id":2}
-	]
-}
-```
-### 5、保存案列
-当user_id为空的时候调用新增，否则调用修改；注意otherwise 需要dbfound-3.0.1后 才支持；
-```xml
-<execute name="save">
-    <sqls>
-        <whenSql when="${@user_id} is null">
-            <execute name="add"/>
-        </whenSql>
-        <otherwiseSql>
-            <execute name="update" />
-        </otherwiseSql>
-    </sqls>
-</execute>
+
+部分示例会用到额外测试表或字段，请按对应 model 内容自行补充。
+
+### 2. 修改连接配置
+
+在 `src/main/resources/application.yaml` 中修改数据库连接：
+
+```yaml
+dbfound:
+  datasource:
+    db0:
+      url: jdbc:mysql://127.0.0.1:3306/dbfound?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: dbfound
+      password: dbfound
+      dialect: MySqlDialect
 ```
 
-### 6、批量导入用户
-创建一个userBatch.xml文件，用来定义导入接口；
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
-    <execute>
-        <sqls>
-            <batchExecuteSql sourcePath="userList">
-            <![CDATA[
-                 INSERT INTO user
-                       (user_code,
-                        user_name,
-                        password,
-                        create_by,
-                        create_date)
-                    VALUES
-                    #BATCH_TEMPLATE_BEGIN#
-                        (${@user_code},
-                        ${@user_name},
-                        ${@password},
-                        1,
-                        NOW())		
-                    #BATCH_TEMPLATE_END#	
-                    ON DUPLICATE KEY update user_name = values(user_name)
-            ]]>
-            </batchExecuteSql>
-        </sqls>
-    </execute>
-</model>
-```
-请求地址http://localhost:8080/userBatch.execute ，请求参数如下：
-```json
-{
-  "userList":[
-    {
-      "user_name" : "小明",
-      "user_code" : "xiaoming",
-      "password"  : "123456123"
-    },
-    {
-      "user_name" : "小杨",
-      "user_code" : "xiaoyang",
-      "password"  : "123456123"
-    }
-  ]
-}
-```
-### 7、批量查询案例 
-有时候一个功能，查询条件有多个下拉框需要从数据库取值；我们可以一次性查询多个返回；
-在userBatch.xml中，添加一个名为batchGet的execute；
-```xml
-<execute name="batchGet">
-    <sqls>
-        <query modelName="user" name="" rootPath="outParam.data1"/>
-        <query modelName="user" name="" rootPath="outParam.data2"/>
-    </sqls>
-</execute>
-```
-请求接口地址：http://localhost:8080/userBatch.execute!batchGet
-返回接口如下：
-```json
-{
-    "success": true,
-    "message": "success",
-    "outParam": {
-        "data2": [
-            {
-                "create_by": 1,
-                "user_code": "xiaoming",
-                "user_id": 2,
-                "user_name": "小明",
-                "create_date": "2022-05-29 10:53:19"
-            },
-            {
-                "create_by": 1,
-                "user_code": "xiao杨",
-                "user_id": 3,
-                "user_name": "小杨",
-                "create_date": "2022-05-29 10:53:19"
-            }
-        ],
-        "data1": [
-            {
-                "create_by": 1,
-                "user_code": "xiaoming",
-                "user_id": 2,
-                "user_name": "小明",
-                "create_date": "2022-05-29 10:53:19"
-            },
-            {
-                "create_by": 1,
-                "user_code": "xiao杨",
-                "user_id": 3,
-                "user_name": "小杨",
-                "create_date": "2022-05-29 10:53:19"
-            }
-        ]
-    }
-}
-```
-### 8、批量添加 有user_id就修改，没有就新增；
-在userBatch.xml 新增一个名为batchAdd的execute，定义批量添加接口；注意新增和修改调用之前user.xml中定义的方法
-```xml
-<execute name="batchAdd">
-<sqls>
-    <batchSql sourcePath="userList">
-        <whenSql when="${@user_id} is null">
-            <execute modelName="user" name="add"/>
-        </whenSql>
-        <otherwiseSql>
-            <execute modelName="user" name="update"/>
-        </otherwiseSql>
-    </batchSql>
-</sqls>
-</execute>
-```
-请求地址http://localhost:8080/userBatch.execute!batchAdd 请求参数如下：
-```json
-{
-	"userList":[
-		{
-			"user_name" : "小明",
-			"user_id" : "1"
-		},
-		{
-			"user_name" : "小李",
-			"user_code" : "xiaoli",
-			"password"  : "123456123"
-		}
-	]
-}
-```
-### 9、dbfound内置批量新增GridData
-当提交数据中包含了一个GridData的数组，则会触发dbfound内置的批量新增；
-同时内置了一个addOrUpdate的特定execute名，根据属性 _status 动态判断是新增，还是修改；
-_status为old则表面是老数据进行修改，为new则表示新数据进行新增；分别调用model中 名为 add 和 update的execute方法；
-拿user.xml举例，请求 http://localhost:8080/user.execute!addOrUpdate 请求参数如下：
-```json
-{
-  "GridData": [
-    {
-      "user_name" : "小明",
-      "user_code" : "xiaoming",
-      "password"  : "123456123",
-      "_status"   : "new"
-    },
-    {
-      "user_name" : "小杨",
-      "user_id" : "2",
-      "password"  : "123456123",
-      "_status"   : "old"
-    }
-  ]
-}
+### 3. 启动项目
+
+```bash
+mvn spring-boot:run
 ```
 
-### 10、多表插入 第一张表自动生成主键id，作为第二张表的外键
-```xml
-<execute name="addTwoTable">
-    <param name="user_id" ioType="out"/>
-    <sqls>
-        <executeSql generatedKeyParam="user_id">
-            <![CDATA[
-            INSERT INTO user
-               (user_code,
-                user_name,
-                password,
-                create_by,
-                create_date)
-            VALUES
-                (${@user_code},
-                ${@user_name},
-                ${@password},
-                1,
-                NOW())
-         ]]>
-        </executeSql>
-        <executeSql>
-            <![CDATA[
-            insert into table2(user_id)
-            values (${@user_id})				
-            ]]>
-        </executeSql>
-    </sqls>
-</execute>
+启动成功后，默认访问地址为：
+
+```text
+http://localhost:8080
 ```
 
-### 11、集合参数
-dbfound 2.6.1后支持 dataType="collection" 用于处理sql集合类赋值，如in场景；
-```xml
-<query name="getByIds">
-    <sql>
-        <![CDATA[
-        SELECT
-            u.user_id,
-            u.user_name,
-            u.user_code,
-            u.create_date,
-            u.create_by
-        FROM user u
-        where u.user_id in (${@ids})
-     ]]>
-    </sql>
-</query>
-```
-请求参数如下
-```json
-{
-	"ids":[14,15]
-}
-```
-返回结果
-```json
-{
-    "success": true,
-    "message": "success",
-    "outParam": {},
-    "datas": [
-        {
-            "create_by": 1,
-            "user_code": "xiaoyang",
-            "user_id": 14,
-            "user_name": "小杨",
-            "create_date": "2022-06-29 16:12:24"
-        },
-        {
-            "create_by": 1,
-            "user_code": "xiaoming1",
-            "user_id": 15,
-            "user_name": "小明",
-            "create_date": "2022-07-09 09:02:22"
-        }
-    ],
-    "totalCounts": 2
-}
-```
-注意： 对于普通类型的集合直接使用即可，如果是对象类集合，则需要额外指定下属性路径；比如集合中位一个User对象，业务是需要取值user_id这个属性；
-```xml
-<param name="ids" dataType="collection" innerPath="user_id"/>
-```
+## 示例入口
 
-### 12、适配器
-框架为query和execute提供了适配器，用于数据适配；
-```xml
+dbfound 会根据 `resources/model` 下的 XML 自动暴露接口。例如：
 
-<query adapter="com.dbfound.world.adapter.UserAdapter">
-    <sql>
-     <![CDATA[
-        SELECT
-            u.user_id,
-            u.user_name,
-            u.user_code,
-            'sing,dance,chess' tags
-        FROM user u
-        #WHERE_CLAUSE#
-     ]]>
-    </sql>
-</query>
-```
+- `POST /user.query`：调用 `model/user.xml` 中默认查询。
+- `POST /user.execute!add`：调用 `model/user.xml` 中 `add` 执行逻辑。
+- `POST /userBatch.execute!batchAdd`：调用 `model/userBatch.xml` 中批量保存逻辑。
+- `POST /userPart.query`：调用 `model/userPart.xml` 中动态 SQL 查询。
+- `POST /userAdapter.query`：调用 `model/userAdapter.xml` 中带适配器的查询。
+
+项目中也提供了 Java Controller + Service 方式调用 dbfound 的接口：
+
+- `GET /user/query`：通过 `UserService` 调用 `ModelExecutor.query(...)`。
+- `GET /user/search`：通过 Map 参数调用查询。
+- `POST /user/update`：通过实体参数调用执行逻辑，并根据影响行数处理业务结果。
+- `POST /user/import`：Excel 导入示例。
+- `GET /user/export`：Excel 导出示例。
+
+完整请求参数、响应格式和 XML 片段请查看：[dbfound example](https://github.com/nfwork/dbfound/wiki/dbfound-example)。
+
+## model 文件说明
+
+- `user.xml`：基础用户查询、添加、修改、保存、删除、集合参数、返回简单类型列表等示例。
+- `userBatch.xml`：批量新增、批量查询、批量保存、多表插入、条件分支等示例。
+- `userPart.xml`：`sqlPart` 动态 SQL、动态字段、动态排序、批量插入等示例。
+- `userAdapter.xml`：查询适配器、集合参数适配、实体返回等示例。
+- `userExcel.xml`：Excel 导入导出配套 model。
+- `function.xml`：内置函数和自定义函数校验示例。
+
+## 前后端分离说明
+
+本项目返回标准 JSON 响应，且已开启跨域配置：
 
 ```java
-
-@Component
-public class UserAdapter implements QueryAdapter<User> {
-
-    @Override
-    public void beforeQuery(Context context, Map<String, Param> params) {
-    }
-
-    @Override
-    public void beforeCount(Context context, Map<String, Param> params, Count count) {
-    }
-
-    @Override
-    public void afterQuery(Context context, Map<String, Param> params, QueryResponseObject<User> responseObject) {
-        List<User> dataList = responseObject.getDatas();
-
-        for (User user : dataList){
-            if(DataUtil.isNotNull(user.getTags())){
-                String[] tags = user.getTags().split(",");
-                user.setTagArray(tags);
-            }
-        }
-    }
-}
-```
-### 13、caseWhen条件判断案列
-```xml
-<execute name="caseWhen">
-    <sqls>
-        <caseSql>
-            <whenSql when="${@flag} = 1">
-                <execute modelName="user" name="add" />
-            </whenSql>
-            <whenSql  when="${@flag} = 2">
-                <execute modelName="user" name="update" />
-            </whenSql>
-            <otherwiseSql>
-                <execute modelName="user" name="delete" />
-            </otherwiseSql>
-        </caseSql>
-    </sqls>
-</execute>
+registry.addMapping("/**")
+        .allowCredentials(true)
+        .allowedOriginPatterns("*")
+        .allowedMethods("GET", "POST", "PUT", "DELETE")
+        .allowedHeaders("*")
+        .exposedHeaders("*");
 ```
 
-### 14、id集合删除，并返回成功删除的条数
-```xml
-<execute name="deleteByList">
-    <param name="delete_num" ioType="out" dataType="number" />
-    <sqls>
-        <executeSql affectedCountParam="delete_num">
-            <![CDATA[
-            delete from user where user_id in( ${@user_id_list})
-            ]]>
-        </executeSql>
-    </sqls>
-</execute>
-```
-请求参数
-```json
-{
-  "user_id_list":[1,2,3,18]
-}
-```
-响应体
-```json
-{
-    "success": true,
-    "message": "success",
-    "code": null,
-    "outParam": {
-        "delete_num": 1
-    }
-}
-```
+前端可以直接通过 `fetch`、`axios` 或其他 HTTP 客户端调用上述接口。项目中 `spring.jackson.property-naming-strategy` 配置为 `SNAKE_CASE`，接口字段默认使用下划线风格，例如 `user_id`、`user_name`。
 
-### 15、查询返回List<Integer>数据
-通常情况下，查询返回的是一个对象；偶尔也有只需要一个list简单类型的情况；3.3.5后开始支持；
-```xml
-<query name="getAll" entity="java.lang.Integer">
-    <sql>
-        SELECT u.user_id FROM user u order by user_id
-    </sql>
-</query>
-```
-返回如下
-```json
-{
-    "datas": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        17,
-        18
-    ],
-    "success": true,
-    "message": "success",
-    "totalCounts": 8
-}
-```
+## 开发建议
 
-### 16、动态sql使用
-dbfound在3.3.6之前对动态sql支持较差，3.3.6引入sqlPart标签，实现动态sql；
-sqlPart分为if和for两类，分别对于if逻辑判断、for循环场景
-
-1、query中使用sqlPart动态生成sql； 根据fields参数判断查询那些字段，根据sort判断是否需要排序
-```xml
-<query>
-    <sql>
-        select user_id
-        <sqlPart type="for" begin="," sourcePath="fields" separator=",">
-            #{@value}
-        </sqlPart>
-        from user
-        <sqlPart type="if" condition="${@sort} is not null">
-            order by #{@sort}
-        </sqlPart>
-    </sql>
-</query>
-```
-请求参数
-```json
-{
-	"fields":["user_code","user_name"],
-	"sort":"user_code desc"
-}
-```
-
-2、execute中使用sqlPart批量新增，新增的用户数据放入到userList数组中
-```xml
-<execute>
-    <sqls>
-        <executeSql>
-            INSERT INTO user
-            (user_code,
-             user_name,
-             password,
-             create_by,
-             create_date)
-            VALUES
-            <sqlPart type="for" sourcePath="userList">
-               (${@user_code},
-                ${@user_name},
-                ${@password},
-                1,
-                NOW())
-            </sqlPart>
-            ON DUPLICATE KEY update user_name = values(user_name)
-        </executeSql>
-    </sqls>
-</execute>
-```
-请求参数
-```json
-{
-    "userList": [{
-        "user_name":"xiaoming",
-        "user_code":"xiaoming5",
-        "password":123
-    },{
-        "user_name":"xiaoming",
-        "user_code":"xiaoming6",
-        "password":123
-    }]
-}
-```
-
-### 17、excel数据导出
-所有的query对象，都支持excel导出；拿user.xml中的 默认query（query没有name)举例；
-访问地址：http://localhost:8080/user.export 就可以将数据导出了；需要传入导出参数制定excel列信息；
-```json
-{
-  "parameters": {
-    "user_name" : "小明",
-    "user_code" : "",
-    "time_from" : "2022-05-08",
-    "time_to"   : ""
-  },
-  "columns": [
-    {"name": "user_code","title": "用户编号", "width": 150},
-    {"name": "user_name","title": "用户名称", "width": 150}
-  ]
-}
-```
-
-
-
+- 新增业务接口时，优先在 `resources/model` 中创建或扩展 XML model。
+- 如果需要复杂参数组装、结果二次处理或业务判断，可在 Java Service 中使用 `ModelExecutor` 调用 model。
+- 如果只是对查询结果做格式转换，优先使用 dbfound adapter，避免在 Controller 中堆业务逻辑。
+- README 只维护项目运行和结构说明，具体案例文档统一维护在 wiki，避免两处内容不一致。
