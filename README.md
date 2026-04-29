@@ -171,7 +171,28 @@ registry.addMapping("/**")
         .exposedHeaders("*");
 ```
 
-前端可以直接通过 `fetch`、`axios` 或其他 HTTP 客户端调用上述接口。项目中 `spring.jackson.property-naming-strategy` 配置为 `SNAKE_CASE`，接口字段默认使用下划线风格，例如 `user_id`、`user_name`。
+前端可以直接通过 `fetch`、`axios` 或其他 HTTP 客户端调用上述接口。项目中 `spring.jackson.property-naming-strategy` 配置为 `SNAKE_CASE`，普通 Java Bean 字段默认使用下划线风格，例如 `user_id`、`user_name`。
+
+项目还在 `JacksonConfig` 中注册了 dbfound 提供的时间、枚举等 JSON 序列化器：
+
+重点说明：`ResponseObjectSerializer` 主要用于适配 `dbfoundui`。启用后，`ResponseObject` 响应中的 `outParam`、`totalCounts` 不会被 `SNAKE_CASE` 转成 `out_param`、`total_counts`，而是保持 dbfoundui 期望的驼峰命名。非 `dbfoundui` 项目通常不需要启用该配置，保持当前注释状态即可。
+
+```java
+@PostConstruct
+public void objectMapper() {
+    SimpleModule module = new SimpleModule();
+    // ResponseObjectSerializer 主要用于适配 dbfoundui，
+    // 让 outParam 和 totalCounts 不受 SNAKE_CASE 影响。
+    // 非 dbfoundui 项目通常不用配置。
+    // module.addSerializer(ResponseObject.class, new JsonUtil.ResponseObjectSerializer());
+    module.addSerializer(Temporal.class, new JsonUtil.TemporalSerializer());
+    module.addSerializer(Enum.class, new JsonUtil.EnumSerializer());
+    module.addSerializer(Date.class, new JsonUtil.DateSerializer());
+    objectMapper.registerModule(module);
+}
+```
+
+普通前后端分离项目可以让响应字段遵循 Spring/Jackson 的统一命名策略；只有需要兼容 `dbfoundui` 时，再放开 `ResponseObjectSerializer` 这一行。
 
 ## 开发建议
 
