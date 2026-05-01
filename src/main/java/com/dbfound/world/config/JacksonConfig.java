@@ -7,7 +7,7 @@ import com.nfwork.dbfound.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.time.temporal.Temporal;
 import java.util.Date;
 

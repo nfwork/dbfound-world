@@ -4,7 +4,7 @@ import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 
 @Component
