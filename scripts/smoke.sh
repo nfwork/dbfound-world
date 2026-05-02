@@ -38,7 +38,7 @@ request_json "query added user" "/user.query" "{
 }"
 
 request_json "dynamic SQL query" "/userPart.query!sec2" '{
-  "fields": "user_code,user_name"
+  "fields": ["user_code","user_name"]
 }'
 
 request_json "adapter query" "/userAdapter.query" '{
