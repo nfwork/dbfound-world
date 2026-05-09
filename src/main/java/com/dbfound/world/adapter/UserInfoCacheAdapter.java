@@ -6,6 +6,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.model.adapter.MapQueryAdapter;
 import com.nfwork.dbfound.model.bean.Param;
+import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,9 @@ public class UserInfoCacheAdapter implements MapQueryAdapter {
     @Override
     public QueryResponseObject<Map<String, Object>> handleQuery(Context context, Map<String, Param> params) {
         String userId = context.getString("param.user_id");
+        if (DataUtil.isNull(userId)){
+            return null;
+        }
         QueryResponseObject<Map<String, Object>> info = userInfoCache.getIfPresent(userId);
         if(info!=null){
             LogUtil.info("get user info from cache, user_id: " + userId);
