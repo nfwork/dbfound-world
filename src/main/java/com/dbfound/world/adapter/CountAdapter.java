@@ -10,6 +10,7 @@ import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
+import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Component
 public class CountAdapter implements ObjectQueryAdapter {
 
     @Override
