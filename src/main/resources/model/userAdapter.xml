@@ -26,6 +26,18 @@
 		</sql>
 	</query>
 
+	<query name="info" adapter="com.dbfound.world.adapter.UserInfoCacheAdapter">
+		<sql>
+			SELECT
+				u.user_id,
+				u.user_name,
+				u.user_code
+			FROM user u
+			where user_id = ${@user_id}
+		</sql>
+		<verifier express="isNull(${@user_id})" message="user_id 不能为空" />
+	</query>
+
 	<query name="count" adapter="com.dbfound.world.adapter.CountAdapter" >
 		<sql>
 			select u.*, r.role_description, r.role_code
