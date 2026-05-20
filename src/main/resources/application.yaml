@@ -1,6 +1,6 @@
 dbfound:
   system:
-    model-modify-check: true
+    model-modify-check: false
   web:
     open-session: false
   datasource:
@@ -10,6 +10,9 @@ dbfound:
       username: dbfound
       password: dbfound
       dialect: MySqlDialect
+
 spring:
   jackson:
     property-naming-strategy: SNAKE_CASE
+  profiles:
+    active: '@spring.profiles.active@'

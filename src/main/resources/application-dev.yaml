@@ -1,0 +1,4 @@
+dbfound:
+  system:
+    model-modify-check: true
+    model-root-path: ${@projectRoot}/src/main/resources/model
