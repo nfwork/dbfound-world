@@ -5,7 +5,7 @@ APP_NAME="${APP_NAME:-$(mvn -q -DforceStdout help:evaluate -Dexpression=project.
 JAR_NAME="${JAR_NAME:-$(mvn -q -DforceStdout help:evaluate -Dexpression=project.build.finalName)}"
 HOST_PORT="${HOST_PORT:-8080}"
 
-mvn clean package
+mvn clean package -P prod
 
 docker build --build-arg JAR_FILE="target/${JAR_NAME}.jar" -t "${APP_NAME}" .
 

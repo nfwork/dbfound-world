@@ -5,6 +5,7 @@ import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.util.List;
 
 @Component
@@ -13,6 +14,11 @@ public class StartWith extends DSqlFunction {
     @PostConstruct
     public void init() {
         register("start_with");
+    }
+
+    @PreDestroy
+    public void destroy() {
+        unRegister();
     }
 
     @Override
