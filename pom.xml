@@ -25,7 +25,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.github.nfwork</groupId>
-			<artifactId>dbfound</artifactId>
+			<artifactId>dbfound-spring-boot-starter</artifactId>
 			<version>3.7.5</version>
 		</dependency>
 		<dependency>
