@@ -2,6 +2,19 @@
 <model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
 
+	<query>
+		<sql>
+			select
+			    <sqlPart type="if" condition="has_value('fields')">
+					#{@fields}
+				</sqlPart>
+				<sqlPart type="else">
+					*
+				</sqlPart>
+			from user
+		</sql>
+	</query>
+
     <execute>
 		<sqls>
 			<collisionSql where="instr('a barbar','ba') = 0" message="hi instr" />
